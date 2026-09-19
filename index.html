@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Veckorna med barnen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F3F4F1; --panel:#FFFFFF; --ink:#1C2228; --muted:#5F6B75; --line:#D8DCD5; --line-soft:#E8EBE5;
+    --a:#2E7D4F; --a-ink:#FFFFFF; --b:#C0392B; --b-ink:#FFFFFF;
+    --warn:#B3261E; --ok:#2F7D4F; --focus:#2E7D4F;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#161A1D; --panel:#1F2428; --ink:#E7EAEC; --muted:#9AA5AD; --line:#333B41; --line-soft:#2A3136;
+      --a:#4CAF7A; --a-ink:#07200F; --b:#E5735F; --b-ink:#2A0E09;
+      --warn:#FF7B6E; --ok:#6CC08F; --focus:#4CAF7A;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#161A1D; --panel:#1F2428; --ink:#E7EAEC; --muted:#9AA5AD; --line:#333B41; --line-soft:#2A3136;
+    --a:#4CAF7A; --a-ink:#07200F; --b:#E5735F; --b-ink:#2A0E09;
+    --warn:#FF7B6E; --ok:#6CC08F; --focus:#4CAF7A;
+    color-scheme:dark;
+  }
+  :root[data-swap="1"]{ --a:#C0392B; --a-ink:#FFFFFF; --b:#2E7D4F; --b-ink:#FFFFFF; --focus:#2E7D4F; }
+  @media (prefers-color-scheme: dark){ :root[data-swap="1"]:not([data-theme="light"]){ --a:#E5735F; --a-ink:#2A0E09; --b:#4CAF7A; --b-ink:#07200F; } }
+  :root[data-swap="1"][data-theme="dark"]{ --a:#E5735F; --a-ink:#2A0E09; --b:#4CAF7A; --b-ink:#07200F; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5}
+  h1,h2,h3{font-family:"Familjen Grotesk","Atkinson Hyperlegible",system-ui,sans-serif;text-wrap:balance;margin:0;line-height:1.1}
+  h1{font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:700;letter-spacing:-0.01em}
+  h2{font-size:1.6rem;font-weight:600}
+  h3{font-size:1.05rem;font-weight:600}
+  p{margin:0 0 .8rem}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 clamp(14px,4vw,36px)}
+  button,select,input{font:inherit}
+  :is(input,select,button,a):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  [hidden]{display:none!important}
+
+  .login{min-height:70vh;display:grid;place-items:center;padding:40px 16px}
+  .login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;width:min(380px,100%);display:grid;gap:14px}
+  .login label{display:grid;gap:6px;font-size:.9rem;color:var(--muted)}
+  .login input{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:1rem}
+  .btn{padding:10px 14px;border-radius:8px;border:1px solid var(--a);background:var(--a);color:var(--a-ink);font-weight:700;cursor:pointer}
+  .btn.quiet{background:transparent;color:var(--ink);border-color:var(--line);font-weight:400;padding:6px 10px;font-size:.9rem}
+  .err{color:var(--warn);font-size:.9rem;min-height:1.2em}
+
+  header.top{padding:28px 0 16px}
+  .topline{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+  .who{color:var(--muted);font-size:.92rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .bar{position:sticky;top:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0}
+  .bar .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+  .bar label{display:inline-flex;gap:8px;align-items:center;font-size:.92rem}
+  select{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.88rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:16px;height:16px;border-radius:4px;display:inline-block}
+  .sw.a{background:var(--a)} .sw.b{background:var(--b)} .sw.mx{background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%);border:1px solid var(--line)}
+  nav.jump{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+  nav.jump a{font-size:.88rem;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--panel)}
+
+  .rule{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0 0;max-width:820px}
+  .rule ol{margin:8px 0 0;padding-left:1.2em}
+  .rule li{margin-bottom:6px}
+  .rule li b{font-family:"Familjen Grotesk",sans-serif}
+
+  .tl{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px;max-width:820px}
+  .tl li{display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:center;padding:9px 14px;border-radius:8px;background:var(--panel);border:1px solid var(--line);border-left-width:6px}
+  .tl li.A{border-left-color:var(--a)} .tl li.B{border-left-color:var(--b)}
+  .tl .d{font-family:"IBM Plex Mono",monospace;font-size:.88rem;font-variant-numeric:tabular-nums}
+  .tl .who{font-weight:700}
+  .tl .note{color:var(--muted);font-size:.9rem}
+  @media (max-width:560px){.tl li{grid-template-columns:1fr}}
+  .mini{display:grid;grid-template-columns:52px repeat(7,1fr);gap:4px;max-width:820px;margin:18px 0 0}
+  .mini .hd{font-size:.72rem;color:var(--muted);text-align:center;padding-bottom:2px}
+  .mini .wl{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--muted);align-self:center}
+  .mini .dd{border-radius:6px;padding:6px 6px 5px;min-height:56px;font-size:.7rem;line-height:1.2;display:flex;flex-direction:column;gap:1px}
+  .mini .dd.A{background:var(--a);color:var(--a-ink)} .mini .dd.B{background:var(--b);color:var(--b-ink)}
+  .mini .dd .dn{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.88rem}
+  .mini .dd .lb{font-weight:700}
+  .mini .dd .by{margin-top:auto;display:inline-block;align-self:flex-start;padding:0 4px;border-radius:3px;background:var(--ink);color:var(--bg);font-weight:700}
+  @media (max-width:560px){.mini{grid-template-columns:34px repeat(7,1fr)}.mini .dd{min-height:44px;padding:4px}}
+  section{padding:36px 0;border-bottom:1px solid var(--line-soft)}
+  section.model header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-bottom:6px}
+  section.model header .eyebrow{font-size:.72rem}
+  .blurb{max-width:68ch;color:var(--muted);margin:0 0 12px}
+  .pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px 28px;max-width:820px;margin:0 0 18px}
+  .pc ul{list-style:none;margin:0;padding:0;font-size:.92rem}
+  .pc li{position:relative;padding-left:22px;margin-bottom:4px;line-height:1.35}
+  .pc li::before{position:absolute;left:0;top:0;font-family:"IBM Plex Mono",monospace;font-weight:700}
+  .pc .pro li::before{content:"+";color:var(--ok)}
+  .pc .con li::before{content:"−";color:var(--warn)}
+
+  table.sum{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--panel);border:1px solid var(--line)}
+  table.sum th,table.sum td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  table.sum th{font-size:.78rem;color:var(--muted);font-weight:700;background:var(--bg)}
+  table.sum td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.sum a{color:var(--ink);font-weight:700;text-decoration:none}
+  table.sum tr:last-child td{border-bottom:0}
+  .best{color:var(--ok);font-weight:700}
+
+  .calhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+  .calhead .note{font-size:.88rem;color:var(--muted)}
+  .calhead .yearsel{display:inline-flex;gap:8px;align-items:center;font-family:"Familjen Grotesk",sans-serif;font-weight:600;font-size:1.05rem}
+  .calhead .yearsel select{font-family:"IBM Plex Mono",monospace;font-size:1rem;padding:4px 10px}
+  .cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:5px}
+  .wk{border-radius:7px;padding:7px 8px 7px;min-height:64px;display:flex;flex-direction:column;gap:2px;position:relative;font-size:.72rem;line-height:1.25}
+  .wk.A{background:var(--a);color:var(--a-ink)} .wk.B{background:var(--b);color:var(--b-ink)}
+  .wk.MX{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+  .wk .n{font-family:"IBM Plex Mono",monospace;font-size:.8rem}
+  .wk .m{opacity:.85}
+  .wk .tag{display:inline-block;margin-top:2px;padding:1px 5px;border-radius:4px;font-weight:700;background:rgba(0,0,0,.14)}
+  .wk.MX .tag{background:var(--line-soft)}
+  .wk .tag.chg,.wk.MX .tag.chg{background:var(--ink);color:var(--bg)}
+  .wk .tag.A{background:var(--a);color:var(--a-ink);box-shadow:0 0 0 1.5px rgba(255,255,255,.7)} .wk .tag.B{background:var(--b);color:var(--b-ink);box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+  .strip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:auto;padding-top:5px}
+  .strip i{display:block;height:7px;border-radius:2px}
+  .strip i.A{background:var(--a)} .strip i.B{background:var(--b)}
+  .wk.A .strip i.A,.wk.B .strip i.B{background:rgba(255,255,255,.35)}
+
+  .stats{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .stats h3{margin-bottom:10px}
+  .srow{display:grid;grid-template-columns:210px 1fr auto auto;gap:10px 14px;align-items:center;padding:6px 0;border-top:1px solid var(--line-soft);font-size:.9rem}
+  .srow:first-of-type{border-top:0}
+  .srow .lab{line-height:1.2}
+  .seg{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;max-width:420px}
+  .seg i{display:block;height:18px;border-radius:3px;background:var(--line-soft)}
+  .seg i.A{background:var(--a)} .seg i.B{background:var(--b)}
+  .cnt{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cnt b.A{color:var(--a)} .cnt b.B{color:var(--b)}
+  .wait{font-size:.82rem;color:var(--muted);white-space:nowrap}
+  .wait.bad{color:var(--warn)}
+  .totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+  .tot b{display:block;font-family:"Familjen Grotesk",sans-serif;font-size:1.4rem;font-weight:600;line-height:1.1}
+  .tot span{font-size:.8rem;color:var(--muted)}
+  @media (max-width:640px){.srow{grid-template-columns:1fr auto;}.srow .seg{grid-column:1 / -1}}
+  footer{padding:30px 0 60px;color:var(--muted);font-size:.86rem;max-width:66ch}
+</style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <form id="loginForm" autocomplete="on">
+    <div>
+      <div class="eyebrow">Privat sida</div>
+      <h1 style="margin-top:6px">Veckorna med barnen</h1>
+    </div>
+    <label>Användarnamn <input id="u" name="username" autocomplete="username" autocapitalize="none" required></label>
+    <label>Lösenord <input id="p" name="password" type="password" autocomplete="current-password" required></label>
+    <div class="err" id="err" aria-live="polite"></div>
+    <button class="btn" type="submit" id="loginBtn">Logga in</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="wrap">
+      <div class="topline">
+        <div>
+          <div class="eyebrow">Förslag · 2026–2037</div>
+          <h1 style="margin-top:6px" id="viewTitle">Veckorna med barnen</h1>
+        </div>
+        <div class="who"><span id="whoTxt"></span><button class="btn quiet" id="logout" type="button">Logga ut</button></div>
+      </div>
+      <div class="rule" id="rule">
+        <div class="eyebrow">Grundregeln</div>
+        <ol>
+          <li><b>Varannan vecka.</b> Byte på måndag. Alla fyra barnen samma vecka.</li>
+          <li><b>Jul och nyår delas varje år.</b> Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år. <span id="julTxt"></span></li>
+          <li><b>Midsommar växlar varje år.</b> <span id="midTxt"></span></li>
+          <li><b>Påsk och lov</b> hamnar där veckan råkar hamna.</li>
+          <li id="fdLi"><b>Födelsedagar firas varannat år hos vardera hemmet</b>, bara den dagen, oberoende av veckan. <span id="fdTxt"></span></li>
+          <li><b>Jämna och udda veckor byter ägare en gång per år, vid nyår.</b> Hur, det står nedan.</li>
+        </ol>
+      </div>
+    </div>
+  </header>
+  <div class="bar">
+    <div class="wrap">
+      <label id="viewWrap" hidden>Visa som <select id="view"></select></label>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+
+  <section id="ingress">
+    <div class="wrap">
+      <h2>Så tar vi oss igenom jul och nyår 2026/27</h2>
+      <p class="blurb">2026 har 53 veckor. Med det här upplägget behöver ingen tänka på det: vecka 53 försvinner in i jul- och nyårsdelningen.</p>
+      <ol class="tl" id="tl"></ol>
+      <div class="mini" id="mini"></div>
+      <p class="blurb" id="tlSum" style="margin-top:14px"></p>
+      <h3 style="margin:22px 0 8px">Kommande årsskiften</h3>
+      <div style="overflow-x:auto"><table class="sum" id="nyTable"></table></div>
+    </div>
+  </section>
+
+
+  <div id="models"></div>
+
+  <footer class="wrap">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen. Sportlov v9 och höstlov v44 enligt Stockholms läsårstider.</footer>
+</div>
+
+<script>
+const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HRAL9e5wdPR9SbQugcTt/146Sy/XSaqJsmevnKzmZj1wq9DHh5tkPohObeFG2QJIcM5OSYSYY0WGVhTMZea6Fs/mfE8TTKIZaSyC2RcPec67KfeZMijHEbSTr2BcbBVFGZo3o8kFoEurQoWLzX/xnmipj4HUts0hSeidoBdt6OWcMAcnh7D7FA86USFydIkYSxE2xirweJYyJNYwwgILMbi2o+uLDz3sEi5GwabasRi9WCX0t6sOFtcP7jOMYEsFb2qOCcZlpfxqr0+cBz/o2dgUiUvUW83hHr9cvZOzMGyGPWQZcdcRB1G+iFX50kiSQfNWAuVEYmUXZbrgnPDZgHoZZX1zlWs7MbNy5r1Yk47wjJ9phs8yMz9Ibr4hCxgzlgAt2uyHaKbDO0KYiY7Qy9CpNiag5C/LwKtfQn3pWsG7BTAv/GyPLmf1FdJ9x052phYBanHPdMnVKDKhB4R9heg4therndsVkZ6vM+f7BgJhUYsFG5df3VTOlYv21wRRZ5MEBprgmjuF2ppZOA/v4xwLmDME5ijJh2vAc9Ci/ZY+piFVglH4lWBvCxfQIQ+qzX7uCf4l9YDFLVaSGCHJKhg2jsceOzu3n2hG7qGj/8x9VE+8pClE5Rhpdu8gTJg2MK+zKtQiO9QNoGWf/623XTBHU9zIJOMiYmpqHa8RyDrDyuvLLQTDN8I3y7O9ynaFe3EaqPPhwVLigzEaI3WpGm7yIrCZKx5dZpQKjVgsW+sXN/sc1rFVjEpWhoXYsdQLFnfnygUwcw2ctql8VBWS4569gQdQgnA9eiz0nTxPZiv4ShQytzxc10HiGW8zK7FQfQ8tBRcLYGYYa83+s+oDA79Hd3RasWJXLrgjXRAygIjzcfimkFVE7ItvCTXUFZtJIdMGuhGQ7RXJWbATni+QlRywSCz1Z1vxTxtIaTVTaTW90H8KazYmIKK9ppd+NhTBnTW4W38HJ5reIwYk3jF+C9OthHhRsPLsvSEASt4G/wzHsf8mHhgwt88WmO4Wt2eCfctdKmujDMmGaIck5YDUSvRMNCWElBt/uDXjX3iO1XYfXz1R2fwtb9kq/oUWG4bKZada0XeHqsV9xxav+QT21xztkRczzQIuV0pQz6f7J8ZW3VXfrTeHyYg4DtTWFu9oMcGujmzSndxBANSrtBbnSFILLQZHp08OQBu+/yqRmWL3KPFoK1ymrSWAvS4lb4Z7Z","emily":"Z+Nz1hBkt8msyhpDYRR5ji5TUa4zreSw3gBqNr/7Ejo9ou6IuqH7YL6w9TSS93fQfQYcz2CJ94u4EPEiP70nh9aioUjzC1qfEsBV3Z27rnnfn+i0/4nteHaLZ/6yGogWOF1epzP5c4cp6/tTUbbY48r5ld5fgJNqsDEZkVfp6wQMACuRAYcyq/IAx8lmNZQLloNR9HNMICdVa4+z4bpNNO/PeP8ffHQEXU6dIcXfAAFAMEapPt0G/jVx9eeCpT0ZX4sU2gqBMZVuIzGOlGv/v/IDXFB8tsw/2B5Dzt3cK3UBbOP/0y8ylyGd5z9FsNksInO4D8uA7teBubT3PsdAERxNyrp5BcdA5W9zkChIFY1+ALK02rQc/lxpj+Qx6JnLgsxpmBOOGH+Zm//GLVPhgndyYmzoIGj8lrokoxuf7bfPKi/PVNUaIN6NEWTIAWPk49LYlQR9l1DVl0c2UkKevcG1fNX5BSeVvm8mtm1nxWPuxGbqd0J6GfMzc0hk8w7/j+jzzIjynu3VHao5oui8XRFd3reAPf5pRJ5o1KSRrTYJMNdocfrjKhTbPR5A5IiPDTE2n3F6KPtpwYYkRTmes8rZ9fN6ZdFrV+F4Pd5OHfjnq3Ra2TkR0L8jzuVfDYsXmLS2srA8PDzTkiLRz3lGIJBfpsDy67nWpPvHC4ab9jS5bXOuNu8B0njnzzCHNwas8t6Gb65L0HbAjnyP2fpzxd+YKE3cMckLopky/XQ3Ii9OgKLkxdkosz0dyh/ATRFbgcUZkuj+mw0B5H3OaKKYNedcSuxtCNyVbfKTjjJBH1lv/3GxWoAQxNqApjMx0N6So4uXkwgAxkVvrPqRs1ARTQOEhg5ZljH3C9Nw+GrAKqfGdFz+/aB+uSfCF1Acnxj+U5hGXJtCJbhuqkwnp5lam9L/p6M3Dx0E37BZm3aMO7iuu9GMzj0gSw5dxGT9CQmseSQT2L0wyh59PCjhY9/qJfFSJRFJLRzxX/trJ20vtouFXv27zzkSjWJ36Qv67or0sC6zOkj3Cn1zUl6zg99k/U6r4EP+b4Lr9ulvDW07r+30xFg1/IPyOPpJZd2QYHIGNnBpmgxXU0LD+OLYxC+hrAuwbEIen8QvUtm74W1gjEcA2mHHjkrc7RpRj1BgLOxG6bwhktGXXrrQx3Oj2pQcoiXW/eIAjiLX4kFEASMFYQcrqsD6twNtYMw2oIbywSthD9KjCp7xUUAi8xdsjgvaKVNeSqqWiqUV3/4copZOFKzE+IG/4rizDfka","malin":"8XuY+PP7ezpEqi9vDyKOe2SOCPSclIsnNW0M+ngLkJRB3dH1wyhB7VLXGoNpSAp2VeR7KetjwIenMUlVUXmaXS9FNyFyGE6gHJ/iYOlI6NBZl822HjaJCcYHLDDfv/rCQE0V+vnDLK24Hvemd9/bKsduVOOMJKnapILIs1EvKq4iXc3lahtD3ptZPAUjtURKvQIPEyNELBGUCg1PS9m2BVUp5Gi0mYq0DUQUb22anEXYJrdtdfdCpTu7lDMB/kG5BQ/G7gqbPD1WrjnXNuL+HYwKhZdgz0B/CQlw2GvY06B/ofiGCxJPjD54PH7bjtBHkGssM8Zzo4myOr0OYAZJrnKDc3hHr04zXk2hJQQPtpfyAk2T6sqbrvCFmhfGt4eD","alex":"B6Fr9/o/b2kMAiyvWNoKVeLfLW6oaTFQ3HA0+oTvXyO2U5i23ik1JL7M4rOgw15Upn/r3eaGlUYdJF3U3dFLrlOHtdFFr2eSk6TNd2rN0JlYTzaus90LSVAHTabRByVZL0iNDnZzXr8XD7y189nb69MU4ZiCLmGG4y6m3s7uq9iOCLsFS0KEm1udnep1SVVF9TgZwtzapeR/lqsE1wS6JALgwmXMOTySB69a1fG+2wj2VcGnUPmnBbe+vwslUyvs4EYHVLJwjkiRDYjRCGJUr92oeahi79ZjC8bt7PaGJ81IT9XzWLcsD78p+xBHnxDKX1C6pkhFU1v/Me3gM9kcv2uMvP9bLmpusdJeHSdMnHVs","frida":"juoSvjRhvmfEF0hCYPgeCr3bOggooUrQe+buocZMw0MPJZ1V/uuTsRGf8WoRffCocSCE5FnNYcIefyEftI0hlyUUmXE/aenEidtKwsrMtBvfMB8ezPG9U8sb27Nvqgujm2ClkOaAWf45kXj+v6y+4dN5OTNv0rYYgOzRzoLfJ10EbMSVwzyMMR1MBMPkv7+sPot4C2fbPubW0aj9JtLOsAra3NAN0xLFvDI08N7lcnm0yReD1/s74p9R9gF+QZw0BNm6nW3GYGk/bK6jPu3fLsqzhcWX+LRlJgpIU/NL/h9wcsAF/mkWgTuMssvql2xbBkkAn7p9cD7aG90i5NjVx4Yd7NajP5y+Eg=="};
+</script>
+<script>
+(function(){
+  const Y0=2026, Y1=2037, YEARS=[]; for(let y=Y0;y<=Y1;y++) YEARS.push(y);
+  const enc=new TextEncoder(), dec=new TextDecoder();
+  const DAY=86400000;
+  const D=(y,m,d)=>Date.UTC(y,m-1,d);
+  const key=t=>new Date(t).toISOString().slice(0,10);
+  const dow=t=>new Date(t).getUTCDay()||7;
+  function iso(t){const x=new Date(t);const d=new Date(Date.UTC(x.getUTCFullYear(),x.getUTCMonth(),x.getUTCDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const y=d.getUTCFullYear();return {y,w:Math.ceil(((d-Date.UTC(y,0,1))/DAY+1)/7)};}
+  const weeksIn=y=>iso(D(y,12,28)).w;
+  const mondayOf=(y,w)=>{const j=D(y,1,4);const day=dow(j);return j-(day-1)*DAY+(w-1)*7*DAY;};
+  const mondayOfDate=t=>t-(dow(t)-1)*DAY;
+  const firstMondayFrom=t=>{while(dow(t)!==1)t+=DAY;return t;};
+  function midsommar(y){for(let d=19;d<=25;d++){const t=D(y,6,d);if(dow(t)===5)return t;}}
+  function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,mm=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*mm+114)/31),da=((h+l-7*mm+114)%31)+1;return D(y,mo,da)-DAY;}
+  const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+  const fmt=t=>{const x=new Date(t);return x.getUTCDate()+' '+MON[x.getUTCMonth()];};
+  const other=h=>h==='A'?'B':'A';
+  const julFam=y=>(y%2===0?'A':'B');
+  const midFam=y=>(y%2===0?'A':'B');
+
+  const MODELS=[
+    {id:'n2', chosen:true, name:'Nyår, med dagarna', kind:'newyear',
+     blurb:'Tre fasta datum varje år: 22 december, annandag jul och 2 januari. Julfamiljen har barnen 22 december till annandag jul. Nyårsfamiljen annandag jul till 2 januari. Julfamiljen 2 januari till måndagen i vecka 2. Sedan varannan vecka igen, med nyårsfamiljen först.',
+     pros:['Samma tre datum varje år: 22 dec, 25 dec, 1 jan. Inga undantag.','Kortast perioder av alla. Inga extra flyttar under året.'],
+     cons:['Tre byten på två veckor kring jul.','Julfamiljen har barnen nyårshelgen plus vecka 1, upp till tio dagar.']},
+  ];
+
+  function build(m){
+    const start=D(2025,12,29), end=D(2038,1,12);
+    const suppress=new Set(), extra=new Set(), forced=[], reset={};
+    if(m.kind==='summer'){
+      for(let y=2027;y<=2038;y++){
+        if(m.id==='s2'){ [28,30,32].forEach(w=>suppress.add(key(mondayOf(y,w)))); }
+        if(m.id==='s1'){ extra.add(key(mondayOf(y,27)+3*DAY)); }
+      }
+    }
+    for(let y=2026;y<=2037;y++){
+      const F1=julFam(y), F2=other(F1);
+      const M1=mondayOfDate(D(y,12,24)), D25=D(y,12,25), J1=D(y+1,1,1);
+      if(m.kind==='summer'){ forced.push([M1,D25,F1],[D25,J1,F2]); }
+      if(m.id==='n1'){ const E=firstMondayFrom(J1)+7*DAY; forced.push([M1,D25,F1],[D25,E,F2]); reset[key(E)]=F1; }
+      if(m.id==='n2'){
+        const D22=D(y,12,22), D26=D(y,12,26), J2=D(y+1,1,2), W2=mondayOf(y+1,2);
+        forced.push([D22,D26,F1],[D26,J2,F2],[J2,W2,F1]); reset[key(W2)]=F2;
+      }
+      const mf=midsommar(y); forced.push([mf,mf+3*DAY,midFam(y)]);
+    }
+    const H={}; let cur='A'; // första dagen är måndag 2025-12-29 (v1 2026, udda) och växlar till B
+    for(let t=start;t<end;t+=DAY){
+      const k=key(t);
+      if(reset[k]!==undefined) cur=reset[k];
+      else if(dow(t)===1 && !suppress.has(k)) cur=other(cur);
+      if(extra.has(k)) cur=other(cur);
+      let h=cur;
+      for(const f of forced){ if(t>=f[0]&&t<f[1]){ h=f[2]; break; } }
+      H[k]=h;
+    }
+    return H;
+  }
+  const hol=(H,t)=>H[key(t)];
+
+  function occasions(view){
+    const rows=[
+      {label:'Julafton', date:y=>D(y,12,24), mark:'julafton'},
+      {label:'Nyårsafton', date:y=>D(y,12,31), mark:'nyårsafton'},
+      {label:'Midsommar', date:y=>midsommar(y), mark:'midsommar'},
+      {label:'Påsk', date:y=>easter(y), mark:'påsk'},
+      {label:'Sportlov', date:y=>mondayOf(y,9)+2*DAY, mark:'sportlov'},
+      {label:'Höstlov', date:y=>mondayOf(y,44)+2*DAY, mark:'höstlov'}
+    ];
+    view.kids.forEach(k=>rows.push({label:k.name+'s födelsedag', date:y=>D(y,k.m,k.d), mark:y=>k.name+' '+(y-k.y)+' år', rule:y=>(y%2===0?'B':'A')}));
+    return rows;
+  }
+  function longestWait(cells){let best=0;for(const s of ['A','B']){let run=0;for(const c of cells){if(c===s)run=0;else{run++;best=Math.max(best,run);}}}return best;}
+
+  function analyse(m,view){
+    const H=build(m), rows=occasions(view);
+    const res=rows.map(r=>{const cells=YEARS.map(y=>r.rule?r.rule(y):hol(H,r.date(y)));const a=cells.filter(c=>c==='A').length;return {r,cells,a,b:cells.length-a,wait:longestWait(cells)};});
+    const even=res.filter(x=>Math.abs(x.a-x.b)<=1).length;
+    const maxWait=Math.max(...res.map(x=>x.wait));
+    let maxRun=0, run=0, prev=null, extraChanges=0;
+    for(let t=D(Y0,1,1);t<D(Y1+1,1,1);t+=DAY){
+      const h=H[key(t)];
+      if(h===prev) run++; else { if(prev!==null && dow(t)!==1) extraChanges++; run=1; }
+      maxRun=Math.max(maxRun,run); prev=h;
+    }
+    return {H,rows,res,even,maxWait,maxRun,extraPerYear:Math.round(extraChanges/YEARS.length*10)/10};
+  }
+
+  let STATE={user:null, view:null, year:2027};
+  const $=id=>document.getElementById(id);
+  const sideName=(view,h)=>h==='A'?view.sideA:view.sideB;
+  const sv=x=>String(x).replace('.',',');
+
+  function renderModels(view){
+    const host=$('models'); host.innerHTML='';
+    MODELS.forEach((m,idx)=>{
+      const a=analyse(m,view);
+      const sec=document.createElement('section'); sec.className='model'; sec.id='m-'+m.id;
+      const rows=a.res.map(x=>'<div class="srow"><span class="lab">'+x.r.label+'</span><span class="seg">'+x.cells.map((c,i)=>'<i class="'+c+'" title="'+YEARS[i]+': '+sideName(view,c)+'"></i>').join('')+'</span><span class="cnt"><b class="A">'+x.a+'</b> – <b class="B">'+x.b+'</b></span><span class="wait'+(x.wait>=4?' bad':'')+'">väntan max '+x.wait+' år</span></div>').join('');
+      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+m.blurb+'</p>'+
+        '<div class="calhead"><label class="yearsel">År <select class="yearsel-input">'+YEARS.map(y=>'<option value="'+y+'"'+(y===STATE.year?' selected':'')+'>'+y+'</option>').join('')+'</select></label><span class="note calnote"></span></div><div class="cal"></div>'+
+        '<div class="stats"><h3>Fördelning 2026–2037</h3>'+rows+
+        '<div class="totals"><div class="tot"><b>'+a.even+' av '+a.res.length+'</b><span>tillfällen jämnt fördelade</span></div><div class="tot"><b>'+a.maxWait+' år</b><span>längsta väntan</span></div><div class="tot"><b>'+a.maxRun+' dagar</b><span>längsta period hos samma hushåll</span></div><div class="tot"><b>'+sv(a.extraPerYear)+'</b><span>extra byten per år</span></div></div></div></div>';
+      host.appendChild(sec);
+      sec._model=m; sec._a=a;
+      const ys=sec.querySelector('.yearsel-input'); ys.onchange=()=>{STATE.year=+ys.value;renderCalendars(view);};
+    });
+    renderCalendars(view);
+  }
+
+  function renderCalendars(view){
+    const y=STATE.year, DN=['mån','tis','ons','tors','fre','lör','sön'];
+    document.querySelectorAll('section.model').forEach(sec=>{
+      const a=sec._a, H=a.H, n=weeksIn(y);
+      const marks={};
+      a.rows.forEach(r=>{ const t=r.date(y); const k=iso(t); if(k.y!==y) return; const txt=typeof r.mark==='function'?r.mark(y):r.mark; (marks[k.w]=marks[k.w]||[]).push(r.rule?'<span class="tag '+r.rule(y)+'">'+txt+' · hos '+sideName(view,r.rule(y))+'</span>':'<span class="tag">'+txt+'</span>'); });
+      let t='', dA=0;
+      for(let w=1;w<=n;w++){
+        const mon=mondayOf(y,w), days=[]; for(let i=0;i<7;i++) days.push(H[key(mon+i*DAY)]);
+        dA+=days.filter(h=>h==='A').length;
+        const uniform=days.every(h=>h===days[0]);
+        const chg=[]; for(let i=1;i<7;i++) if(days[i]!==days[i-1]) chg.push('byte '+fmt(mon+i*DAY));
+        const tags=(marks[w]||[]).concat(chg.map(x=>'<span class="tag chg">'+x+'</span>')).join(' ');
+        const strip='<span class="strip">'+days.map(h=>'<i class="'+h+'"></i>').join('')+'</span>';
+        const title=uniform?sideName(view,days[0]):days.map((h,i)=>DN[i]+' '+sideName(view,h)).join(', ');
+        t+='<div class="wk '+(uniform?days[0]:'MX')+'" title="v'+w+' · '+title+'"><span class="n">v'+w+'</span><span class="m">'+fmt(mon)+'</span>'+(tags?'<span>'+tags+'</span>':'')+strip+'</div>';
+      }
+      sec.querySelector('.cal').innerHTML=t;
+      sec.querySelector('.calnote').textContent=dA+' dagar '+(view.legendA||('hos '+view.sideA))+', '+(n*7-dA)+' '+(view.legendB||('hos '+view.sideB));
+    });
+  }
+
+  const DN=['mån','tis','ons','tors','fre','lör','sön'];
+  const dfmt=t=>DN[dow(t)-1]+' '+fmt(t);
+  function transition(H,y){
+    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2), M0=mondayOfDate(D22);
+    const steps=[];
+    if(M0<D22) steps.push({t:M0,who:H[key(M0)],note:'vanligt måndagsbyte, v'+iso(M0).w});
+    steps.push({t:D22,who:H[key(D22)],note:(H[key(D22)]===H[key(D22-DAY)]?'ingen flytt, barnen är redan där. ':'kl 12. ')+'Julafton och juldagen hos '+H[key(D25)]});
+    steps.push({t:D26,who:H[key(D26)],note:'annandag jul, kl 12. Nyårsafton och nyårsdagen hos '+H[key(J1)]});
+    steps.push({t:J2,who:H[key(J2)],note:'2 januari, kl 12. Resten av nyårshelgen och v1'});
+    steps.push({t:W2,who:H[key(W2)],note:'v2. Sedan varannan vecka: v3 '+H[key(W2+7*DAY)]+', v4 '+H[key(W2+14*DAY)]+' …'});
+    return {steps,D22,D26,J2,W2,evenHolder:H[key(W2)]};
+  }
+  function renderIngress(view){
+    const m=MODELS.find(x=>x.chosen), H=build(m), nm=h=>sideName(view,h);
+    const tr=transition(H,2026);
+    $('tl').innerHTML=tr.steps.map(s=>'<li class="'+s.who+'"><span class="d">'+dfmt(s.t)+'</span><span><span class="who">Barnen till '+nm(s.who)+'.</span> <span class="note">'+s.note.replace(/\bA\b/g,nm('A')).replace(/\bB\b/g,nm('B'))+'</span></span></li>').join('');
+    {
+      const LB={'12-22':'jullov börjar','12-24':'julafton','12-25':'juldagen','12-26':'annandag jul','12-31':'nyårsafton','01-01':'nyårsdagen','01-06':'trettondagen'};
+      const from=mondayOfDate(tr.D22)-7*DAY, to=tr.W2+7*DAY;
+      let g=['mån','tis','ons','tors','fre','lör','sön'].map(d=>'<div class="hd">'+d+'</div>');
+      g.unshift('<div></div>');
+      for(let wk=from; wk<to; wk+=7*DAY){
+        g.push('<div class="wl">v'+iso(wk).w+'</div>');
+        for(let i=0;i<7;i++){
+          const d=wk+i*DAY, x=new Date(d), h=H[key(d)], prev=H[key(d-DAY)];
+          const mk=String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0');
+          const dn=x.getUTCDate()+(x.getUTCDate()===1||d===from?' '+MON[x.getUTCMonth()]:'');
+          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev?'<span class="by">byte'+(dow(d)===1?'':' kl 12')+'</span>':'')+'</div>');
+        }
+      }
+      $('mini').innerHTML=g.join('');
+    }
+    const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+    $('tlSum').textContent=cap(nm(tr.evenHolder))+' har jämna veckor 2027, '+nm(other(tr.evenHolder))+' udda. Vecka 53 (28 dec–3 jan) försvinner in i nyårsblocket, ingen 53-veckorsregel behövs.';
+    let rows='';
+    for(let y=2026;y<=2031;y++){
+      const x=transition(H,y);
+      rows+='<tr><td><b>'+y+'/'+String(y+1).slice(2)+'</b></td><td>'+nm(H[key(x.D22)])+'</td><td>'+nm(H[key(x.D26)])+'</td><td>'+nm(H[key(x.J2)])+' <span class="num">(2–'+fmt(x.W2)+')</span></td><td class="num">'+dfmt(x.W2)+'</td><td>'+nm(H[key(x.W2)])+'</td><td>'+nm(x.evenHolder)+'</td></tr>';
+    }
+    $('nyTable').innerHTML='<thead><tr><th>Årsskifte</th><th>Jul, 22–26 dec</th><th>Nyår, 26 dec–2 jan</th><th>Resten av helgen och v1, 2 jan → v2</th><th>Veckorna startar</th><th>Vecka 2 hos</th><th>Jämna veckor året efter</th></tr></thead><tbody>'+rows+'</tbody>';
+  }
+
+  const SWAP={malin:true, alex:true}; // vyer där den inloggade är "andra hushållet": egna veckor gröna
+  function renderView(){
+    const view=STATE.view, swap=!!SWAP[view.id];
+    document.documentElement.dataset.swap=swap?'1':'';
+    $('viewTitle').textContent=view.title;
+    $('julTxt').textContent='Jämna år: jul hos '+view.sideA+', nyår hos '+view.sideB+'. Udda år tvärtom.';
+    $('midTxt').textContent='Jämna år hos '+view.sideA+', udda år hos '+view.sideB+'.';
+    $('fdLi').hidden=!view.kids.length;
+    $('fdTxt').textContent='Jämna år hos '+view.sideB+', udda år hos '+view.sideA+'. 2026: '+view.kids.map(k=>k.name).join(', ')+' hos '+view.sideB+'.';
+    const lA='<span><i class="sw a"></i> '+(view.legendA||('hos '+view.sideA))+'</span>', lB='<span><i class="sw b"></i> '+(view.legendB||('hos '+view.sideB))+'</span>';
+    $('legend').innerHTML=(swap?lB+lA:lA+lB)+'<span><i class="sw mx"></i> byte mitt i veckan, dagarna syns i randen</span>';
+    renderIngress(view); renderModels(view);
+  }
+
+  function enterApp(user){
+    STATE.user=user; STATE.view=user.views[0];
+    $('login').hidden=true; $('app').hidden=false;
+    $('whoTxt').textContent='Inloggad: '+user.household;
+    if(user.admin){ $('viewWrap').hidden=false; const vs=$('view'); vs.innerHTML=user.views.map((v,i)=>'<option value="'+i+'">'+v.title+'</option>').join(''); vs.onchange=()=>{STATE.view=user.views[+vs.value];renderView();}; }
+    renderView();
+  }
+
+  function b64(s){const bin=atob(s);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;}
+  async function unlock(username,password){
+    const blob=USERS[username]; if(!blob) throw new Error('no user');
+    const raw=b64(blob), salt=raw.slice(0,16), iv=raw.slice(16,28), ct=raw.slice(28);
+    const km=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);
+    const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv},k,ct);
+    return JSON.parse(dec.decode(pt));
+  }
+  $('loginForm').addEventListener('submit',async e=>{
+    e.preventDefault(); $('err').textContent=''; $('loginBtn').disabled=true; $('loginBtn').textContent='Låser upp…';
+    const u=$('u').value.trim().toLowerCase(), p=$('p').value;
+    try{ const user=await unlock(u,p); try{sessionStorage.setItem('vb',JSON.stringify({u,p}));}catch(_){ } enterApp(user); }
+    catch(_){ $('err').textContent='Fel användarnamn eller lösenord.'; }
+    $('loginBtn').disabled=false; $('loginBtn').textContent='Logga in';
+  });
+  $('logout').addEventListener('click',()=>{ try{sessionStorage.removeItem('vb');}catch(_){ } location.reload(); });
+  (async()=>{ try{ const s=JSON.parse(sessionStorage.getItem('vb')||'null'); if(s){ enterApp(await unlock(s.u,s.p)); } }catch(_){ } })();
+})();
+</script>
+
+</body>
+</html>
