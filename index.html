@@ -119,6 +119,7 @@
   .wk .tag{display:inline-block;margin-top:2px;padding:1px 5px;border-radius:4px;font-weight:700;background:rgba(0,0,0,.14)}
   .wk.MX .tag{background:var(--line-soft)}
   .wk .tag.chg,.wk.MX .tag.chg{background:var(--ink);color:var(--bg)}
+  .wk .tag.sk,.wk.MX .tag.sk{background:var(--panel);color:var(--ink);border:1px dashed var(--ink);font-weight:400}
   .wk .tag.A{background:var(--a);color:var(--a-ink);box-shadow:0 0 0 1.5px rgba(255,255,255,.7)} .wk .tag.B{background:var(--b);color:var(--b-ink);box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
   .strip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:auto;padding-top:5px}
   .strip i{display:block;height:7px;border-radius:2px}
@@ -172,7 +173,7 @@
       <div class="rule" id="rule">
         <div class="eyebrow">Grundregeln</div>
         <ol>
-          <li><b>Varannan vecka.</b> Byte på måndag. Alla fyra barnen samma vecka.</li>
+          <li><b>Varannan vecka.</b> <span id="rule1">Byte på måndag. Alla fyra barnen samma vecka.</span></li>
           <li><b>Jul och nyår delas varje år.</b> Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år. <span id="julTxt"></span></li>
           <li><b>Midsommar växlar varje år.</b> <span id="midTxt"></span></li>
           <li><b>Påsk och lov</b> hamnar där veckan råkar hamna.</li>
@@ -192,7 +193,7 @@
   <section id="ingress">
     <div class="wrap">
       <h2>Så tar vi oss igenom jul och nyår 2026/27</h2>
-      <p class="blurb">2026 har 53 veckor. Med det här upplägget behöver ingen tänka på det: vecka 53 försvinner in i jul- och nyårsdelningen.</p>
+      <p class="blurb">2026 har 53 veckor. Med det här upplägget behöver ingen tänka på det: vecka 53 försvinner in i jul- och nyårsdelningen. Täbys skolor: sista skoldag fredag 18 december, skolstart måndag 11 januari, samma dag som veckorna startar om.</p>
       <ol class="tl" id="tl"></ol>
       <div class="mini" id="mini"></div>
       <p class="blurb" id="tlSum" style="margin-top:14px"></p>
@@ -204,11 +205,11 @@
 
   <div id="models"></div>
 
-  <footer class="wrap">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen. Sportlov v9 och höstlov v44 enligt Stockholms läsårstider.</footer>
+  <footer class="wrap">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen. Skoldatum enligt Täby kommuns läsårstider 2026/27 (höstlov v44, sportlov v9, påsklov veckan efter påsk, skolstart 11 jan). Senare läsår antas följa samma mönster tills Täby publicerat dem.</footer>
 </div>
 
 <script>
-const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HRAL9e5wdPR9SbQugcTt/146Sy/XSaqJsmevnKzmZj1wq9DHh5tkPohObeFG2QJIcM5OSYSYY0WGVhTMZea6Fs/mfE8TTKIZaSyC2RcPec67KfeZMijHEbSTr2BcbBVFGZo3o8kFoEurQoWLzX/xnmipj4HUts0hSeidoBdt6OWcMAcnh7D7FA86USFydIkYSxE2xirweJYyJNYwwgILMbi2o+uLDz3sEi5GwabasRi9WCX0t6sOFtcP7jOMYEsFb2qOCcZlpfxqr0+cBz/o2dgUiUvUW83hHr9cvZOzMGyGPWQZcdcRB1G+iFX50kiSQfNWAuVEYmUXZbrgnPDZgHoZZX1zlWs7MbNy5r1Yk47wjJ9phs8yMz9Ibr4hCxgzlgAt2uyHaKbDO0KYiY7Qy9CpNiag5C/LwKtfQn3pWsG7BTAv/GyPLmf1FdJ9x052phYBanHPdMnVKDKhB4R9heg4therndsVkZ6vM+f7BgJhUYsFG5df3VTOlYv21wRRZ5MEBprgmjuF2ppZOA/v4xwLmDME5ijJh2vAc9Ci/ZY+piFVglH4lWBvCxfQIQ+qzX7uCf4l9YDFLVaSGCHJKhg2jsceOzu3n2hG7qGj/8x9VE+8pClE5Rhpdu8gTJg2MK+zKtQiO9QNoGWf/623XTBHU9zIJOMiYmpqHa8RyDrDyuvLLQTDN8I3y7O9ynaFe3EaqPPhwVLigzEaI3WpGm7yIrCZKx5dZpQKjVgsW+sXN/sc1rFVjEpWhoXYsdQLFnfnygUwcw2ctql8VBWS4569gQdQgnA9eiz0nTxPZiv4ShQytzxc10HiGW8zK7FQfQ8tBRcLYGYYa83+s+oDA79Hd3RasWJXLrgjXRAygIjzcfimkFVE7ItvCTXUFZtJIdMGuhGQ7RXJWbATni+QlRywSCz1Z1vxTxtIaTVTaTW90H8KazYmIKK9ppd+NhTBnTW4W38HJ5reIwYk3jF+C9OthHhRsPLsvSEASt4G/wzHsf8mHhgwt88WmO4Wt2eCfctdKmujDMmGaIck5YDUSvRMNCWElBt/uDXjX3iO1XYfXz1R2fwtb9kq/oUWG4bKZada0XeHqsV9xxav+QT21xztkRczzQIuV0pQz6f7J8ZW3VXfrTeHyYg4DtTWFu9oMcGujmzSndxBANSrtBbnSFILLQZHp08OQBu+/yqRmWL3KPFoK1ymrSWAvS4lb4Z7Z","emily":"Z+Nz1hBkt8msyhpDYRR5ji5TUa4zreSw3gBqNr/7Ejo9ou6IuqH7YL6w9TSS93fQfQYcz2CJ94u4EPEiP70nh9aioUjzC1qfEsBV3Z27rnnfn+i0/4nteHaLZ/6yGogWOF1epzP5c4cp6/tTUbbY48r5ld5fgJNqsDEZkVfp6wQMACuRAYcyq/IAx8lmNZQLloNR9HNMICdVa4+z4bpNNO/PeP8ffHQEXU6dIcXfAAFAMEapPt0G/jVx9eeCpT0ZX4sU2gqBMZVuIzGOlGv/v/IDXFB8tsw/2B5Dzt3cK3UBbOP/0y8ylyGd5z9FsNksInO4D8uA7teBubT3PsdAERxNyrp5BcdA5W9zkChIFY1+ALK02rQc/lxpj+Qx6JnLgsxpmBOOGH+Zm//GLVPhgndyYmzoIGj8lrokoxuf7bfPKi/PVNUaIN6NEWTIAWPk49LYlQR9l1DVl0c2UkKevcG1fNX5BSeVvm8mtm1nxWPuxGbqd0J6GfMzc0hk8w7/j+jzzIjynu3VHao5oui8XRFd3reAPf5pRJ5o1KSRrTYJMNdocfrjKhTbPR5A5IiPDTE2n3F6KPtpwYYkRTmes8rZ9fN6ZdFrV+F4Pd5OHfjnq3Ra2TkR0L8jzuVfDYsXmLS2srA8PDzTkiLRz3lGIJBfpsDy67nWpPvHC4ab9jS5bXOuNu8B0njnzzCHNwas8t6Gb65L0HbAjnyP2fpzxd+YKE3cMckLopky/XQ3Ii9OgKLkxdkosz0dyh/ATRFbgcUZkuj+mw0B5H3OaKKYNedcSuxtCNyVbfKTjjJBH1lv/3GxWoAQxNqApjMx0N6So4uXkwgAxkVvrPqRs1ARTQOEhg5ZljH3C9Nw+GrAKqfGdFz+/aB+uSfCF1Acnxj+U5hGXJtCJbhuqkwnp5lam9L/p6M3Dx0E37BZm3aMO7iuu9GMzj0gSw5dxGT9CQmseSQT2L0wyh59PCjhY9/qJfFSJRFJLRzxX/trJ20vtouFXv27zzkSjWJ36Qv67or0sC6zOkj3Cn1zUl6zg99k/U6r4EP+b4Lr9ulvDW07r+30xFg1/IPyOPpJZd2QYHIGNnBpmgxXU0LD+OLYxC+hrAuwbEIen8QvUtm74W1gjEcA2mHHjkrc7RpRj1BgLOxG6bwhktGXXrrQx3Oj2pQcoiXW/eIAjiLX4kFEASMFYQcrqsD6twNtYMw2oIbywSthD9KjCp7xUUAi8xdsjgvaKVNeSqqWiqUV3/4copZOFKzE+IG/4rizDfka","malin":"8XuY+PP7ezpEqi9vDyKOe2SOCPSclIsnNW0M+ngLkJRB3dH1wyhB7VLXGoNpSAp2VeR7KetjwIenMUlVUXmaXS9FNyFyGE6gHJ/iYOlI6NBZl822HjaJCcYHLDDfv/rCQE0V+vnDLK24Hvemd9/bKsduVOOMJKnapILIs1EvKq4iXc3lahtD3ptZPAUjtURKvQIPEyNELBGUCg1PS9m2BVUp5Gi0mYq0DUQUb22anEXYJrdtdfdCpTu7lDMB/kG5BQ/G7gqbPD1WrjnXNuL+HYwKhZdgz0B/CQlw2GvY06B/ofiGCxJPjD54PH7bjtBHkGssM8Zzo4myOr0OYAZJrnKDc3hHr04zXk2hJQQPtpfyAk2T6sqbrvCFmhfGt4eD","alex":"B6Fr9/o/b2kMAiyvWNoKVeLfLW6oaTFQ3HA0+oTvXyO2U5i23ik1JL7M4rOgw15Upn/r3eaGlUYdJF3U3dFLrlOHtdFFr2eSk6TNd2rN0JlYTzaus90LSVAHTabRByVZL0iNDnZzXr8XD7y189nb69MU4ZiCLmGG4y6m3s7uq9iOCLsFS0KEm1udnep1SVVF9TgZwtzapeR/lqsE1wS6JALgwmXMOTySB69a1fG+2wj2VcGnUPmnBbe+vwslUyvs4EYHVLJwjkiRDYjRCGJUr92oeahi79ZjC8bt7PaGJ81IT9XzWLcsD78p+xBHnxDKX1C6pkhFU1v/Me3gM9kcv2uMvP9bLmpusdJeHSdMnHVs","frida":"juoSvjRhvmfEF0hCYPgeCr3bOggooUrQe+buocZMw0MPJZ1V/uuTsRGf8WoRffCocSCE5FnNYcIefyEftI0hlyUUmXE/aenEidtKwsrMtBvfMB8ezPG9U8sb27Nvqgujm2ClkOaAWf45kXj+v6y+4dN5OTNv0rYYgOzRzoLfJ10EbMSVwzyMMR1MBMPkv7+sPot4C2fbPubW0aj9JtLOsAra3NAN0xLFvDI08N7lcnm0yReD1/s74p9R9gF+QZw0BNm6nW3GYGk/bK6jPu3fLsqzhcWX+LRlJgpIU/NL/h9wcsAF/mkWgTuMssvql2xbBkkAn7p9cD7aG90i5NjVx4Yd7NajP5y+Eg=="};
+const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr19tCJ1GM20mUbpy/OzJB6z6vT6K1T9x/H49n7EEr7Ie/uj7DAqdUVMtGHY69l+7kNIzncGkshq5/u32WCqwWq6Y7jZJkuUvjFCakx7bPuhidCilPJw1CegnjOTEQ2+fOKhI/qZLGW5NpRfS376YOYOaiU7uY/ZWPTC3mQLjOKCboXPZvTN7NPmBPb3p8lkIqBOtE81Voz+icwRyyzszMUDsEZ1CUGkeqkQESixmIbsdvxGiAeFCb7yMcExxuj/hjjri3tSYggvV4ufwzD2s7saYIZIvo4Fq/Fo2WTrzhvRfpvtuBfFk/3tXcuqqcjAt/QEaM6P7KruAmWccNhesc4cc+98OdPs0NU5LfX/fWOz9ViFuFxSW3fZN7qH3npZ5SbtdO0hUF5A/D2L+1RF1n0IZjGafw77d0TcbNXvqrzIFcwB7C4vgYhHzSyjgVGrrpPuv1jhC5lZ2h7eMR6sYiiD7/vWL4buQ7xtcxucAp8Agt2I1ke+nOsNoDrPduI/IHQYeovg88eRLXgqn67mJO5DQivxRsvVBy6KnLAaxWWgvaVknTKsjpAQFW1s/CeiVF2BeT99gIoK+P6tlvNF09v53SLTPuuOmrD8IwN0IBiZLpDkBFdzwTxJu6mk+KYaHZ9+4yb7L+bYSuVfunM4IGhCchUxELvoKGsTHzJpcIML25Cgzzc/FpvgfxJQqXUOgXkJfXOMwXhf2/Lq14qDBmKr6sLy8Y+IVSVWwDDajQlJsMK/tbOZQErqVENh9mLOLuy05mY0/8ffWoknK2Y3M1sDLmsTvuhTPBNainyMRAuFHN6GM+K2NJrrfVcWCsGbCWefgRv9HjVJjTkw3jzoExkdRYwleS8yGzOMzaF34R9MYhzzs8LfjusUUjUUwtguqEe7S2lthESrD1r0fCKfdlEhswWCjImJ5KTTyd7P/NhPWDryuPIXCb6pBeItMpg7baPfgNCScuPm8xKBMDLFH9yiWJveDz/lfY3O5JpQ6VGXrWA0PCqoFeo1X0wK0bcw5VsHL0FLP7tAK4v7IAFErbmLfzf9cZg5vhM81RX1Kw4TZ450WTRhlFo7cjezza5DFwuA5LgBApSTXfT7ScufnksWTR0UciKhWk3YaqXPCmDYPV6Z+QxD5NbqG9BI12U8UR8imRP1mGF0NpLEtH8w1kgHXwO1VOVWGwwYs/1HopcqX45Rk0U9x8OVDtxoGfE4Z8amHTQu5cenrJJqun8U8Iky8HTsl+2NY/nfFHWszIUfa/rNFjj0/7BqQnz3FGvaQ8bWRFFbjubMC3Sv2zGDrDAnyXA3tFrAweTJLtyfOX0AJyJ5od2RHCQE9wx6mk4w6i+1lzCWRomt4t+TXriD/e9o42aAS5LoIZOw5F+Rmkt2VwRojxoRN0IZHOffYWEivDundnkNMPXjAzlk4aoz1Py0yrC10/pmcf6n12Gz8RXq+Ytiw3NQELE7cd8VpNq3K9uVZZsVjKAp2LmXHhIA=","emily":"mHB1pEhk5QQGbhCo63r6vu9ZzidEZhhVhMXAPI4xfVTie0VSNX91t7SCvAjzXX8ZuZk7yihfCfmu+2EOI9HGRgvqvnSMOFOo2pTGrFiU8ysE906iHnq8zGMBIMDcBzR+FI5vZobhHMBbfzmpnt4BKwYTOMeDUzxFHP+ygtPXNy+t51OoocEe7JuarRiufxVFvHjQ78gn1/9l/Dr3YAICoWaqAZhs4cIfX83rKNk8mG68f1KoXXe8Q3jEs4jjrBmLJKGPqy7oGtl9s6GSDH0Kyi9+vLHj5kIyncfKqsqgVd/dFadfjjvqpmgRtC47Fx1xYGjpdokjq1s4IGH53VLQs4lb6gNoFoALyi/5cmVvr1h1hddnVCn01atFp4Ncxa9dVKLoW1hr0s4y/YV1zykIXJlcQXgwcsWu2Kq/KCrP/Jci/oFvW5B/GqjDTVdYO41iw9prz8U6nB+U7Gw8q/hBDrPoFyXzSpCoVIWo5RPAvRYOjiGRTifbSlhQQOwe8C9F7PDx47IGe7G+ySrRZvE1M0IFDerPAiEACjKYMjhdoVaCgOHYffsIa/TI7jva6KsXh67s79sYZmZmcXUXEvXAv+vHDjU4FyrZLTB0INT3Gb+EVGJfgS4rrIe0WUiygrcekVH2MocHLCoMjYQcHyXak4r71nFxE03KS4feuGscg4IN3TcmJnAzvNwIRwkCiRC2klVk7IOYgaenXzCoyJgOitLXCpnpRTrENLzygKQmP1UcGPXhCzWcnJAjbOlzjVSW4bhhd59pvSSzDJsc8pUBVAS6NbRY7itLS9oGPt+4O2Laq8bzvogcS7CuuZE98MD29ezBcTRDR0v/Kgc5QRgqPjC85LdBa//n2Yt6pyMg2TFx5bUYaoD/9YdCvwFCxnpiDNCnN/ZSLMmag1kMRuyRdg2QmNto70YwxgPvD49VlSru9KYoncpvOL+9wuhixVlqIRQ0FJb9YaiQg/Dw3AyzmqDTAbV+k3GmTevaaN6J39SjUdGyv1Ao28O/PuF1IfsNzsCi03tq7D+CowI++ADinH1poFsffAcQMJ50BnqsDuw8Jv864KhUid6L22y7hGTdL0/Sf5xesa2NVskLY1ferEwSFr7eCJ2cEXM8/0qo26d3EHDGkQ0iJ13JSbrl0sEL8NEr6kHnfBK/W2HQlYvm9IPlhvlDEw5FL39prneVf3PRCL85OLHXDszjPt+5AHxitZ0fC9vZQYH5yrMi5Ils8RD6N0kiQbYiClkgppRuSfS0WcNQbzYyX+6Yvmx5L5I/9WS+rHuIpTaVsrmlM32frWBb1H5fssrmJUIv8+EfOwtFXjzZta199vRETWFZHuXxvllVtzaB5SfgaDgQdonqdtjf70N/RR7EtkvgHCwdj+WWvg3M1x2WKAu/9McbL56MBwoJ7/+YTWwJ/6wdpuMjz2Yh/F2n5k1syMnkIqk1dl9eXhss3TRQCcyp0reRTEGTb7M4uS+pmirc2rhPtdEeqNA7hZYjS8Ui4+gCSMMTHtk1msd16JZl3IP16y6+QHmLMp1AA6Tq7+E=","malin":"xpq83FNkiXcOT6c6sfiYdfCk9XoE3AwzM7dk+UfEbkWPbmdhoaszDRo17mDNKhWTcZl0r3Inu1wNEXNYbn6bjvyDxT/mf3wmUV8voRdLwZzqVXt/2qNAf+dqlY8v4mVQ9DEoB5CMxhDDSLwtweuIu1B3p4Yy8AhtYV/py434PJvgRMl6xUHDRPLPz5NzeBMvbxpL7a62uDX8fmAxKkX65dlhFKULU4WVZt6h3TJLs0pJYsllqlJb07UTVahAJj5cRIRW+U4UahSycEaLsDjGWVg78/4HaTEYS416+iK6lqMD27He3Hi9pttZQJ+yWsN5kbyuXVUIsIENxhwLoS/FB0fdznIz/nO5/SZioNy0+O7fA7/+nUn7DoKlbXgC84Cr","alex":"BepfV9uJqejstvCm7wN+O6tXXzQhZWU2E6bDizLiqruKgxUwopl7Tcx9qx/v2lFH6xPrN0auPtS+M0RgnbCHoFQPA/98iCNwnqim5GANJ3ldQJzhoAJhyRYPMuWnXV6OmQmutxoQJ/3PC+kH5Ua7+zwkxQZrxRmfXvkI21/DFvNvWvcB3Eu6mNugXl4oBHPrPpZmAdITxp9xvk5hedNSZXISlcwNmipEb/9eahzqaTsDczFGOdvuTHUV351qBOOKvVw9IgHB+VfbPNugD2e+iOabwXw+FvKo2q0rwe7kzdx1BGQ2vQyiyu6N2kXkoQLTa1VsASGkquZkkx3v1o+sOypFR7fcoI9VaKfIQCvFYBwr","frida":"c27dMYf4HBUTsGcS235n3qg5W/7xAJTqwx1QfxBSO7NiZa980EIrnUfum8TscRRpwVoLbyJToI849U6lKgszkzNJA9r5GktgIKcuoanLD1x7YZrdExd2jx941geRvfASS7ZFEIqENdNstMlTVETV1Tvr7nBPe3oKTtKucaCcyi1/+2Go2q+N8UAbjdKYICTus7Fv9I7eoRqdDY4UvZPT3wqeQhCneQabOk+uKPI0sSNcjtXvFrEc9ibZOdgK0oUnkKnUjhAdUAE/Qp9pFJRCXyuVitdMSQ+RScLTmK7Quu+ZcfxYGwSCGZW4MMgGRGtnSY3nRK20qSFPjvjCdKw8A3fuTEVW0n42TRDRkvptAgBMM19sE4bBiydGp8SGsTF5W8Fer/NgX1UPXFzwufO7ZVrVRRyqOcJO0LsGyKNSyJ1R6xVM01XQ0XPgZlLCBFy/s/chrF/PN/2gSrhP+6loulmfL/o1xUmVyeYv6JG3aoh7xIeLwLbsP6LdIyd7cIs1M7mXb4koW5THYKeVOpy49EZR/zP6dUStbH0NDhU+DJJHbkqQWHaC/Z1oS4LJYdDzWCcOnpFcm88WZGrUw8nxe84kGjW0TNUxbm8zavmPXFWwyAQp66MS"};
 </script>
 <script>
 (function(){
@@ -229,6 +230,8 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
   const fmt=t=>{const x=new Date(t);return x.getUTCDate()+' '+MON[x.getUTCMonth()];};
   const other=h=>h==='A'?'B':'A';
   const julFam=y=>(y%2===0?'A':'B');
+  // Täby kommun, läsårstider 2026/27 (taby.se). Senare läsår: höstlov v44, sportlov v9, påsklov veckan efter påsk.
+  const SCHOOL=[[D(2026,8,17),'skolstart'],[D(2026,10,26),'höstlov 26–30 okt'],[D(2026,12,18),'sista skoldag'],[D(2027,1,11),'skolstart'],[D(2027,3,1),'sportlov 1–5 mar'],[D(2027,3,29),'påsklov 29 mar–2 apr'],[D(2027,5,6),'Kristi himmelsfärd + klämdag'],[D(2027,6,10),'skolavslutning']];
   const midFam=y=>(y%2===0?'A':'B');
 
   const MODELS=[
@@ -238,7 +241,8 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
      cons:['Tre byten på två veckor kring jul.','Julfamiljen har barnen nyårshelgen plus vecka 1, upp till tio dagar.']},
   ];
 
-  function build(m){
+  function build(m,shift){
+    shift=shift||0;
     const start=D(2025,12,29), end=D(2038,1,12);
     const suppress=new Set(), extra=new Set(), forced=[], reset={};
     if(m.kind==='summer'){
@@ -254,7 +258,7 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
       if(m.id==='n1'){ const E=firstMondayFrom(J1)+7*DAY; forced.push([M1,D25,F1],[D25,E,F2]); reset[key(E)]=F1; }
       if(m.id==='n2'){
         const D22=D(y,12,22), D26=D(y,12,26), J2=D(y+1,1,2), W2=mondayOf(y+1,2);
-        forced.push([D22,D26,F1],[D26,J2,F2],[J2,W2,F1]); reset[key(W2)]=F2;
+        forced.push([D22,D26,F1],[D26,J2,F2],[J2,W2+shift*DAY,F1]); reset[key(W2+shift*DAY)]=F2;
       }
       const mf=midsommar(y); forced.push([mf,mf+3*DAY,midFam(y)]);
     }
@@ -262,7 +266,7 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
     for(let t=start;t<end;t+=DAY){
       const k=key(t);
       if(reset[k]!==undefined) cur=reset[k];
-      else if(dow(t)===1 && !suppress.has(k)) cur=other(cur);
+      else if(dow(t-shift*DAY)===1 && !suppress.has(k)) cur=other(cur);
       if(extra.has(k)) cur=other(cur);
       let h=cur;
       for(const f of forced){ if(t>=f[0]&&t<f[1]){ h=f[2]; break; } }
@@ -277,9 +281,10 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
       {label:'Julafton', date:y=>D(y,12,24), mark:'julafton'},
       {label:'Nyårsafton', date:y=>D(y,12,31), mark:'nyårsafton'},
       {label:'Midsommar', date:y=>midsommar(y), mark:'midsommar'},
-      {label:'Påsk', date:y=>easter(y), mark:'påsk'},
-      {label:'Sportlov', date:y=>mondayOf(y,9)+2*DAY, mark:'sportlov'},
-      {label:'Höstlov', date:y=>mondayOf(y,44)+2*DAY, mark:'höstlov'}
+      {label:'Påsk', date:y=>easter(y), mark:'påskafton'},
+      {label:'Sportlov (v9)', date:y=>mondayOf(y,9)+2*DAY, mark:'sportlov'},
+      {label:'Påsklov (veckan efter påsk)', date:y=>easter(y)+4*DAY, mark:'påsklov'},
+      {label:'Höstlov (v44)', date:y=>mondayOf(y,44)+2*DAY, mark:'höstlov'}
     ];
     view.kids.forEach(k=>rows.push({label:k.name+'s födelsedag', date:y=>D(y,k.m,k.d), mark:y=>k.name+' '+(y-k.y)+' år', rule:y=>(y%2===0?'B':'A')}));
     return rows;
@@ -287,14 +292,14 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
   function longestWait(cells){let best=0;for(const s of ['A','B']){let run=0;for(const c of cells){if(c===s)run=0;else{run++;best=Math.max(best,run);}}}return best;}
 
   function analyse(m,view){
-    const H=build(m), rows=occasions(view);
+    const H=build(m,view.shift), rows=occasions(view);
     const res=rows.map(r=>{const cells=YEARS.map(y=>r.rule?r.rule(y):hol(H,r.date(y)));const a=cells.filter(c=>c==='A').length;return {r,cells,a,b:cells.length-a,wait:longestWait(cells)};});
     const even=res.filter(x=>Math.abs(x.a-x.b)<=1).length;
     const maxWait=Math.max(...res.map(x=>x.wait));
     let maxRun=0, run=0, prev=null, extraChanges=0;
     for(let t=D(Y0,1,1);t<D(Y1+1,1,1);t+=DAY){
       const h=H[key(t)];
-      if(h===prev) run++; else { if(prev!==null && dow(t)!==1) extraChanges++; run=1; }
+      if(h===prev) run++; else { if(prev!==null && dow(t-(view.shift||0)*DAY)!==1) extraChanges++; run=1; }
       maxRun=Math.max(maxRun,run); prev=h;
     }
     return {H,rows,res,even,maxWait,maxRun,extraPerYear:Math.round(extraChanges/YEARS.length*10)/10};
@@ -311,7 +316,7 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
       const a=analyse(m,view);
       const sec=document.createElement('section'); sec.className='model'; sec.id='m-'+m.id;
       const rows=a.res.map(x=>'<div class="srow"><span class="lab">'+x.r.label+'</span><span class="seg">'+x.cells.map((c,i)=>'<i class="'+c+'" title="'+YEARS[i]+': '+sideName(view,c)+'"></i>').join('')+'</span><span class="cnt"><b class="A">'+x.a+'</b> – <b class="B">'+x.b+'</b></span><span class="wait'+(x.wait>=4?' bad':'')+'">väntan max '+x.wait+' år</span></div>').join('');
-      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+m.blurb+'</p>'+
+      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+(view.shift?m.blurb.replace('måndagen i vecka 2','fredagen i vecka 2'):m.blurb)+'</p>'+
         '<div class="calhead"><label class="yearsel">År <select class="yearsel-input">'+YEARS.map(y=>'<option value="'+y+'"'+(y===STATE.year?' selected':'')+'>'+y+'</option>').join('')+'</select></label><span class="note calnote"></span></div><div class="cal"></div>'+
         '<div class="stats"><h3>Fördelning 2026–2037</h3>'+rows+
         '<div class="totals"><div class="tot"><b>'+a.even+' av '+a.res.length+'</b><span>tillfällen jämnt fördelade</span></div><div class="tot"><b>'+a.maxWait+' år</b><span>längsta väntan</span></div><div class="tot"><b>'+a.maxRun+' dagar</b><span>längsta period hos samma hushåll</span></div><div class="tot"><b>'+sv(a.extraPerYear)+'</b><span>extra byten per år</span></div></div></div></div>';
@@ -323,46 +328,52 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
   }
 
   function renderCalendars(view){
-    const y=STATE.year, DN=['mån','tis','ons','tors','fre','lör','sön'];
+    const y=STATE.year, DN=['mån','tis','ons','tors','fre','lör','sön'], sh=view.shift||0;
     document.querySelectorAll('section.model').forEach(sec=>{
       const a=sec._a, H=a.H, n=weeksIn(y);
       const marks={};
-      a.rows.forEach(r=>{ const t=r.date(y); const k=iso(t); if(k.y!==y) return; const txt=typeof r.mark==='function'?r.mark(y):r.mark; (marks[k.w]=marks[k.w]||[]).push(r.rule?'<span class="tag '+r.rule(y)+'">'+txt+' · hos '+sideName(view,r.rule(y))+'</span>':'<span class="tag">'+txt+'</span>'); });
+      const schoolWeeks=new Set(SCHOOL.filter(s=>iso(s[0]).y===y).map(s=>iso(s[0]).w));
+      a.rows.forEach(r=>{ const t=r.date(y); const k=iso(t); if(k.y!==y) return; if(/lov/.test(r.label) && schoolWeeks.has(k.w)) return; const txt=typeof r.mark==='function'?r.mark(y):r.mark; (marks[k.w]=marks[k.w]||[]).push(r.rule?'<span class="tag '+r.rule(y)+'">'+txt+' · hos '+sideName(view,r.rule(y))+'</span>':'<span class="tag">'+txt+'</span>'); });
+      SCHOOL.forEach(s=>{ const k=iso(s[0]); if(k.y!==y) return; (marks[k.w]=marks[k.w]||[]).push('<span class="tag sk">'+s[1]+'</span>'); });
       let t='', dA=0;
       for(let w=1;w<=n;w++){
         const mon=mondayOf(y,w), days=[]; for(let i=0;i<7;i++) days.push(H[key(mon+i*DAY)]);
         dA+=days.filter(h=>h==='A').length;
-        const uniform=days.every(h=>h===days[0]);
-        const chg=[]; for(let i=1;i<7;i++) if(days[i]!==days[i-1]) chg.push('byte '+fmt(mon+i*DAY));
+        const allSame=days.every(h=>h===days[0]);
+        const pattern=!!sh && days.slice(sh).every(h=>h===days[sh]) && days.slice(0,sh).every(h=>h===other(days[sh]));
+        const uniform=allSame||pattern;
+        const chg=[]; for(let i=1;i<7;i++) if(days[i]!==days[i-1] && !(pattern && i===sh)) chg.push('byte '+fmt(mon+i*DAY));
         const tags=(marks[w]||[]).concat(chg.map(x=>'<span class="tag chg">'+x+'</span>')).join(' ');
         const strip='<span class="strip">'+days.map(h=>'<i class="'+h+'"></i>').join('')+'</span>';
         const title=uniform?sideName(view,days[0]):days.map((h,i)=>DN[i]+' '+sideName(view,h)).join(', ');
-        t+='<div class="wk '+(uniform?days[0]:'MX')+'" title="v'+w+' · '+title+'"><span class="n">v'+w+'</span><span class="m">'+fmt(mon)+'</span>'+(tags?'<span>'+tags+'</span>':'')+strip+'</div>';
+        t+='<div class="wk '+(uniform?days[sh]:'MX')+'" title="v'+w+' · '+title+'"><span class="n">v'+w+'</span><span class="m">'+fmt(mon)+'</span>'+(tags?'<span>'+tags+'</span>':'')+strip+'</div>';
       }
       sec.querySelector('.cal').innerHTML=t;
-      sec.querySelector('.calnote').textContent=dA+' dagar '+(view.legendA||('hos '+view.sideA))+', '+(n*7-dA)+' '+(view.legendB||('hos '+view.sideB));
+      sec.querySelector('.calnote').textContent=dA+' dagar '+(view.legendA||('hos '+view.sideA))+', '+(n*7-dA)+' '+(view.legendB||('hos '+view.sideB))+(sh?' · färgen visar vems helg det är, randen visar dagarna':'');
     });
   }
 
   const DN=['mån','tis','ons','tors','fre','lör','sön'];
   const dfmt=t=>DN[dow(t)-1]+' '+fmt(t);
-  function transition(H,y){
-    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2), M0=mondayOfDate(D22);
-    const steps=[];
-    if(M0<D22) steps.push({t:M0,who:H[key(M0)],note:'vanligt måndagsbyte, v'+iso(M0).w});
-    steps.push({t:D22,who:H[key(D22)],note:(H[key(D22)]===H[key(D22-DAY)]?'ingen flytt, barnen är redan där. ':'kl 12. ')+'Julafton och juldagen hos '+H[key(D25)]});
+  function transition(H,y,sh){
+    sh=sh||0;
+    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2)+sh*DAY, M0=mondayOfDate(D22-sh*DAY)+sh*DAY;
+    const steps=[], hd=sh?'fredagsbyte':'måndagsbyte', wl=sh?'fre v':'v';
+    const julNote='Julafton och juldagen hos '+H[key(D25)];
+    if(H[key(D22)]===H[key(D22-DAY)] && M0<D22){ steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w+'. Barnen stannar över 22 dec. '+julNote}); }
+    else { if(M0<D22) steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w}); steps.push({t:D22,who:H[key(D22)],note:'kl 12. '+julNote}); }
     steps.push({t:D26,who:H[key(D26)],note:'annandag jul, kl 12. Nyårsafton och nyårsdagen hos '+H[key(J1)]});
     steps.push({t:J2,who:H[key(J2)],note:'2 januari, kl 12. Resten av nyårshelgen och v1'});
-    steps.push({t:W2,who:H[key(W2)],note:'v2. Sedan varannan vecka: v3 '+H[key(W2+7*DAY)]+', v4 '+H[key(W2+14*DAY)]+' …'});
+    steps.push({t:W2,who:H[key(W2)],note:wl+'2. Sedan varannan vecka: '+wl+'3 '+H[key(W2+7*DAY)]+', '+wl+'4 '+H[key(W2+14*DAY)]+' …'});
     return {steps,D22,D26,J2,W2,evenHolder:H[key(W2)]};
   }
   function renderIngress(view){
-    const m=MODELS.find(x=>x.chosen), H=build(m), nm=h=>sideName(view,h);
-    const tr=transition(H,2026);
+    const m=MODELS.find(x=>x.chosen), sh=view.shift||0, H=build(m,sh), nm=h=>sideName(view,h);
+    const tr=transition(H,2026,sh);
     $('tl').innerHTML=tr.steps.map(s=>'<li class="'+s.who+'"><span class="d">'+dfmt(s.t)+'</span><span><span class="who">Barnen till '+nm(s.who)+'.</span> <span class="note">'+s.note.replace(/\bA\b/g,nm('A')).replace(/\bB\b/g,nm('B'))+'</span></span></li>').join('');
     {
-      const LB={'12-22':'jullov börjar','12-24':'julafton','12-25':'juldagen','12-26':'annandag jul','12-31':'nyårsafton','01-01':'nyårsdagen','01-06':'trettondagen'};
-      const from=mondayOfDate(tr.D22)-7*DAY, to=tr.W2+7*DAY;
+      const LB={'12-18':'sista skoldag','12-19':'jullov börjar','12-24':'julafton','12-25':'juldagen','12-26':'annandag jul','12-31':'nyårsafton','01-01':'nyårsdagen','01-06':'trettondagen','01-11':'skolstart'};
+      const from=mondayOfDate(tr.D22)-7*DAY, to=mondayOfDate(tr.W2)+7*DAY;
       let g=['mån','tis','ons','tors','fre','lör','sön'].map(d=>'<div class="hd">'+d+'</div>');
       g.unshift('<div></div>');
       for(let wk=from; wk<to; wk+=7*DAY){
@@ -371,7 +382,7 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
           const d=wk+i*DAY, x=new Date(d), h=H[key(d)], prev=H[key(d-DAY)];
           const mk=String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0');
           const dn=x.getUTCDate()+(x.getUTCDate()===1||d===from?' '+MON[x.getUTCMonth()]:'');
-          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev?'<span class="by">byte'+(dow(d)===1?'':' kl 12')+'</span>':'')+'</div>');
+          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev?'<span class="by">byte'+(dow(d-sh*DAY)===1?(sh?' kl 15':''):' kl 12')+'</span>':'')+'</div>');
         }
       }
       $('mini').innerHTML=g.join('');
@@ -380,10 +391,10 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
     $('tlSum').textContent=cap(nm(tr.evenHolder))+' har jämna veckor 2027, '+nm(other(tr.evenHolder))+' udda. Vecka 53 (28 dec–3 jan) försvinner in i nyårsblocket, ingen 53-veckorsregel behövs.';
     let rows='';
     for(let y=2026;y<=2031;y++){
-      const x=transition(H,y);
+      const x=transition(H,y,sh);
       rows+='<tr><td><b>'+y+'/'+String(y+1).slice(2)+'</b></td><td>'+nm(H[key(x.D22)])+'</td><td>'+nm(H[key(x.D26)])+'</td><td>'+nm(H[key(x.J2)])+' <span class="num">(2–'+fmt(x.W2)+')</span></td><td class="num">'+dfmt(x.W2)+'</td><td>'+nm(H[key(x.W2)])+'</td><td>'+nm(x.evenHolder)+'</td></tr>';
     }
-    $('nyTable').innerHTML='<thead><tr><th>Årsskifte</th><th>Jul, 22–26 dec</th><th>Nyår, 26 dec–2 jan</th><th>Resten av helgen och v1, 2 jan → v2</th><th>Veckorna startar</th><th>Vecka 2 hos</th><th>Jämna veckor året efter</th></tr></thead><tbody>'+rows+'</tbody>';
+    $('nyTable').innerHTML='<thead><tr><th>Årsskifte</th><th>Jul, 22–26 dec</th><th>Nyår, 26 dec–2 jan</th><th>Resten av helgen och v1, 2 jan → v2</th><th>Veckorna startar</th><th>'+(sh?'Fredag v2 hos':'Vecka 2 hos')+'</th><th>'+(sh?'Jämna veckors helger året efter':'Jämna veckor året efter')+'</th></tr></thead><tbody>'+rows+'</tbody>';
   }
 
   const SWAP={malin:true, alex:true}; // vyer där den inloggade är "andra hushållet": egna veckor gröna
@@ -391,6 +402,7 @@ const USERS = {"erik":"YY7scfqS9yCxp26bmxQLIw+gzcB0Xnp1Eh3n2GNcBNYJ2waJBl4Bry1HR
     const view=STATE.view, swap=!!SWAP[view.id];
     document.documentElement.dataset.swap=swap?'1':'';
     $('viewTitle').textContent=view.title;
+    $('rule1').textContent=view.rule1||'Byte på måndag. Alla fyra barnen samma vecka.';
     $('julTxt').textContent='Jämna år: jul hos '+view.sideA+', nyår hos '+view.sideB+'. Udda år tvärtom.';
     $('midTxt').textContent='Jämna år hos '+view.sideA+', udda år hos '+view.sideB+'.';
     $('fdLi').hidden=!view.kids.length;
