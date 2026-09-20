@@ -210,12 +210,12 @@
       <div class="rule" id="rule">
         <div class="eyebrow">Grundregeln</div>
         <ol>
-          <li><b>Varannan vecka.</b> <span id="rule1">Byte på måndag. Alla fyra barnen samma vecka.</span></li>
+          <li><b id="rule1h">Varannan vecka.</b> <span id="rule1">Byte på måndag. Alla fyra barnen samma vecka.</span></li>
           <li><b>Jul och nyår delas varje år.</b> Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år. <span id="julTxt"></span></li>
           <li><b>Midsommar växlar varje år.</b> <span id="midTxt"></span></li>
           <li><b>Påsk och lov</b> hamnar där veckan råkar hamna.</li>
           <li id="fdLi"><b>Födelsedagar firas varannat år hos vardera hemmet</b>, bara den dagen, oberoende av veckan. <span id="fdTxt"></span></li>
-          <li><b>Jämna och udda veckor byter ägare en gång per år, vid nyår.</b> Hur, det står nedan.</li>
+          <li><b id="rule6h">Jämna och udda veckor byter ägare en gång per år, vid nyår.</b> Hur, det står nedan.</li>
         </ol>
       </div>
     </div>
@@ -270,6 +270,16 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
   // Täby kommun, läsårstider 2026/27 (taby.se). Senare läsår: höstlov v44, sportlov v9, påsklov veckan efter påsk.
   const SCHOOL=[[D(2026,8,17),'skol\u00adstart'],[D(2026,10,26),'höst\u00adlov 26–30 okt'],[D(2026,12,18),'sista skol\u00addag'],[D(2027,1,11),'skol\u00adstart'],[D(2027,3,1),'sport\u00adlov 1–5 mar'],[D(2027,3,29),'påsk\u00adlov 29 mar–2 apr'],[D(2027,5,6),'Kristi himmels\u00adfärd + kläm\u00addag'],[D(2027,6,10),'skol\u00adav\u00adslutning']];
   const midFam=y=>(y%2===0?'A':'B');
+  // Vyer med fasta veckodagar (2-2-3): mån–tis hos ena, ons–tors hos andra, fre–sön följer helgrotationen.
+  // Nyckel = veckodag (1 = måndag). Jul, nyår och midsommar går före mönstret.
+  const PATTERN={frida:{1:'B',2:'B',3:'A',4:'A'}};
+  const patternOf=view=>PATTERN[view.id]||null;
+  // Är ett byte på dag t ett vanligt schemabyte (inte ett extra byte)?
+  function regularChange(view,t,h,prev){
+    const P=patternOf(view), d=dow(t);
+    if(P){ if(d===1) return h===P[1]; if(d===3) return h===P[3]&&prev===P[2]; if(d===5) return prev===P[4]; return false; }
+    return dow(t-(view.shift||0)*DAY)===1;
+  }
 
   const MODELS=[
     {id:'n2', chosen:true, name:'Nyår, med dagarna', kind:'newyear',
@@ -278,7 +288,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
      cons:['Tre byten på två veckor kring jul.','Julfamiljen har barnen nyårshelgen plus vecka 1, upp till tio dagar.']},
   ];
 
-  function build(m,shift){
+  function build(m,shift,P){
     shift=shift||0;
     const start=D(2025,12,29), end=D(2038,1,12);
     const suppress=new Set(), extra=new Set(), forced=[], reset={};
@@ -295,7 +305,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       if(m.id==='n1'){ const E=firstMondayFrom(J1)+7*DAY; forced.push([M1,D25,F1],[D25,E,F2]); reset[key(E)]=F1; }
       if(m.id==='n2'){
         const D22=D(y,12,22), D26=D(y,12,26), J2=D(y+1,1,2), W2=mondayOf(y+1,2);
-        forced.push([D22,D26,F1],[D26,J2,F2],[J2,W2+shift*DAY,F1]); reset[key(W2+shift*DAY)]=F2;
+        forced.push([D22,D26,F1],[D26,J2,F2],[J2,P?W2:W2+shift*DAY,F1]); reset[key(W2+shift*DAY)]=F2;
       }
       const mf=midsommar(y); forced.push([mf,mf+3*DAY,midFam(y)]);
     }
@@ -305,8 +315,9 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       if(reset[k]!==undefined) cur=reset[k];
       else if(dow(t-shift*DAY)===1 && !suppress.has(k)) cur=other(cur);
       if(extra.has(k)) cur=other(cur);
-      let h=cur;
-      for(const f of forced){ if(t>=f[0]&&t<f[1]){ h=f[2]; break; } }
+      let h=cur, hit=false;
+      for(const f of forced){ if(t>=f[0]&&t<f[1]){ h=f[2]; hit=true; break; } }
+      if(!hit && P && P[dow(t)]) h=P[dow(t)];
       H[k]=h;
     }
     return H;
@@ -323,20 +334,23 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       {label:'Påsklov (veckan efter påsk)', date:y=>easter(y)+4*DAY, mark:'påsk\u00adlov'},
       {label:'Höstlov (v44)', date:y=>mondayOf(y,44)+2*DAY, mark:'höst\u00adlov'}
     ];
+    if(patternOf(view)){ // fasta veckodagar: det som växlar under ett lov är helgen, så mät lördagen
+      rows.forEach(r=>{ if(/lov/.test(r.label)){ const d=r.date; r.date=y=>d(y)+3*DAY; r.label+=', helgen'; } });
+    }
     view.kids.forEach(k=>rows.push({label:k.name+'s födelsedag', date:y=>D(y,k.m,k.d), mark:y=>k.name+' '+(y-k.y)+' år', rule:y=>(y%2===0?'B':'A')}));
     return rows;
   }
   function longestWait(cells){let best=0;for(const s of ['A','B']){let run=0;for(const c of cells){if(c===s)run=0;else{run++;best=Math.max(best,run);}}}return best;}
 
   function analyse(m,view){
-    const H=build(m,view.shift), rows=occasions(view);
+    const H=build(m,view.shift,patternOf(view)), rows=occasions(view);
     const res=rows.map(r=>{const cells=YEARS.map(y=>r.rule?r.rule(y):hol(H,r.date(y)));const a=cells.filter(c=>c==='A').length;return {r,cells,a,b:cells.length-a,wait:longestWait(cells)};});
     const even=res.filter(x=>Math.abs(x.a-x.b)<=1).length;
     const maxWait=Math.max(...res.map(x=>x.wait));
     let maxRun=0, run=0, prev=null, extraChanges=0;
     for(let t=D(Y0,1,1);t<D(Y1+1,1,1);t+=DAY){
       const h=H[key(t)];
-      if(h===prev) run++; else { if(prev!==null && dow(t-(view.shift||0)*DAY)!==1) extraChanges++; run=1; }
+      if(h===prev) run++; else { if(prev!==null && !regularChange(view,t,h,prev)) extraChanges++; run=1; }
       maxRun=Math.max(maxRun,run); prev=h;
     }
     return {H,rows,res,even,maxWait,maxRun,extraPerYear:Math.round(extraChanges/YEARS.length*10)/10};
@@ -353,7 +367,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       const a=analyse(m,view);
       const sec=document.createElement('section'); sec.className='model'; sec.id='m-'+m.id;
       const rows=a.res.map(x=>'<div class="srow"><span class="lab">'+x.r.label+'</span><span class="seg">'+x.cells.map((c,i)=>'<i class="'+c+'" title="'+YEARS[i]+': '+sideName(view,c)+'"></i>').join('')+'</span><span class="cnt"><b class="A">'+x.a+'</b> – <b class="B">'+x.b+'</b></span><span class="wait'+(x.wait>=4?' bad':'')+'">väntan max '+x.wait+' år</span></div>').join('');
-      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+(view.shift?m.blurb.replace('måndagen i vecka 2','fredagen i vecka 2'):m.blurb)+'</p>'+
+      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+(patternOf(view)?m.blurb.replace('varannan vecka igen','varannan helg igen'):view.shift?m.blurb.replace('måndagen i vecka 2','fredagen i vecka 2'):m.blurb)+'</p>'+
         '<div class="calhead"><label class="yearsel">År <select class="yearsel-input">'+YEARS.map(y=>'<option value="'+y+'"'+(y===STATE.year?' selected':'')+'>'+y+'</option>').join('')+'</select></label><span class="note calnote"></span></div><div class="cal"></div>'+
         '<div class="stats"><h3>Fördelning 2026–2037</h3>'+rows+
         '<div class="totals"><div class="tot"><b>'+a.even+' av '+a.res.length+'</b><span>tillfällen jämnt fördelade</span></div><div class="tot"><b>'+a.maxWait+' år</b><span>längsta väntan</span></div><div class="tot"><b>'+a.maxRun+' dagar</b><span>längsta period hos samma hushåll</span></div><div class="tot"><b>'+sv(a.extraPerYear)+'</b><span>extra byten per år</span></div></div></div></div>';
@@ -365,7 +379,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
   }
 
   function renderCalendars(view){
-    const y=STATE.year, DN=['mån','tis','ons','tors','fre','lör','sön'], sh=view.shift||0;
+    const y=STATE.year, DN=['mån','tis','ons','tors','fre','lör','sön'], sh=view.shift||0, P=patternOf(view), ci=P?4:sh;
     document.querySelectorAll('section.model').forEach(sec=>{
       const a=sec._a, H=a.H, n=weeksIn(y);
       const marks={};
@@ -377,36 +391,38 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
         const mon=mondayOf(y,w), days=[]; for(let i=0;i<7;i++) days.push(H[key(mon+i*DAY)]);
         dA+=days.filter(h=>h==='A').length;
         const allSame=days.every(h=>h===days[0]);
-        const pattern=!!sh && days.slice(sh).every(h=>h===days[sh]) && days.slice(0,sh).every(h=>h===other(days[sh]));
-        const uniform=allSame||pattern;
-        const chg=[]; for(let i=1;i<7;i++) if(days[i]!==days[i-1] && !(pattern && i===sh)) chg.push('byte '+fmt(mon+i*DAY));
+        const pattern=P ? (days[0]===P[1]&&days[1]===P[2]&&days[2]===P[3]&&days[3]===P[4]&&days[4]===days[5]&&days[5]===days[6])
+                        : (!!sh && days.slice(sh).every(h=>h===days[sh]) && days.slice(0,sh).every(h=>h===other(days[sh])));
+        const uniform=(allSame&&!P)||pattern;
+        const chg=[]; for(let i=1;i<7;i++) if(days[i]!==days[i-1] && !regularChange(view,mon+i*DAY,days[i],days[i-1])) chg.push('byte '+fmt(mon+i*DAY));
         const tags=(marks[w]||[]).concat(chg.map(x=>'<span class="tag chg">'+x+'</span>')).join(' ');
         const strip='<span class="strip">'+days.map(h=>'<i class="'+h+'"></i>').join('')+'</span>';
-        const title=uniform?sideName(view,days[0]):days.map((h,i)=>DN[i]+' '+sideName(view,h)).join(', ');
-        t+='<div class="wk '+(uniform?days[sh]:'MX')+'" title="v'+w+' · '+title+'"><span class="n">v'+w+'</span><span class="m">'+fmt(mon)+'</span>'+(tags?'<span>'+tags+'</span>':'')+strip+'</div>';
+        const title=uniform?(P?'helg '+sideName(view,days[4])+' · mån–tis '+sideName(view,P[1])+', ons–tors '+sideName(view,P[3]):sideName(view,days[0])):days.map((h,i)=>DN[i]+' '+sideName(view,h)).join(', ');
+        t+='<div class="wk '+(uniform?days[ci]:'MX')+'" title="v'+w+' · '+title+'"><span class="n">v'+w+'</span><span class="m">'+fmt(mon)+'</span>'+(tags?'<span>'+tags+'</span>':'')+strip+'</div>';
       }
       sec.querySelector('.cal').innerHTML=t;
-      sec.querySelector('.calnote').textContent=dA+' dagar '+(view.legendA||('hos '+view.sideA))+', '+(n*7-dA)+' '+(view.legendB||('hos '+view.sideB))+(sh?' · färgen visar vems helg det är, randen visar dagarna':'');
+      sec.querySelector('.calnote').textContent=dA+' dagar '+(view.legendA||('hos '+view.sideA))+', '+(n*7-dA)+' '+(view.legendB||('hos '+view.sideB))+(sh||P?' · färgen visar vems helg det är, randen visar dagarna':'');
     });
   }
 
   const DN=['mån','tis','ons','tors','fre','lör','sön'];
   const dfmt=t=>DN[dow(t)-1]+' '+fmt(t);
-  function transition(H,y,sh){
-    sh=sh||0;
-    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2)+sh*DAY, M0=mondayOfDate(D22-sh*DAY)+sh*DAY;
-    const steps=[], hd=sh?'fredagsbyte':'måndagsbyte', wl=sh?'fre v':'v';
+  function transition(H,y,sh,P){
+    sh=P?4:(sh||0);
+    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2)+sh*DAY, M0=mondayOfDate(D22-sh*DAY)+sh*DAY, blockEnd=P?mondayOf(y+1,2):W2;
+    const steps=[], hd=P?'helgbyte':sh?'fredagsbyte':'måndagsbyte', wl=P?'helg v':sh?'fre v':'v', per=P?'helg':'vecka';
     const julNote='Julafton och juldagen hos '+H[key(D25)];
     if(H[key(D22)]===H[key(D22-DAY)] && M0<D22){ steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w+'. Barnen stannar över 22 dec. '+julNote}); }
     else { if(M0<D22) steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w}); steps.push({t:D22,who:H[key(D22)],note:'kl 12. '+julNote}); }
     steps.push({t:D26,who:H[key(D26)],note:'annandag jul, kl 12. Nyårsafton och nyårsdagen hos '+H[key(J1)]});
     steps.push({t:J2,who:H[key(J2)],note:'2 januari, kl 12. Resten av nyårshelgen och v1'});
-    steps.push({t:W2,who:H[key(W2)],note:wl+'2. Sedan varannan vecka: '+wl+'3 '+H[key(W2+7*DAY)]+', '+wl+'4 '+H[key(W2+14*DAY)]+' …'});
-    return {steps,D22,D26,J2,W2,evenHolder:H[key(W2)]};
+    if(P) steps.push({t:blockEnd,who:H[key(blockEnd)],note:'vardagarna som vanligt igen: mån–tis '+P[1]+', ons–tors '+P[3]});
+    steps.push({t:W2,who:H[key(W2)],note:wl+'2. Sedan varannan '+per+': '+wl+'3 '+H[key(W2+7*DAY)]+', '+wl+'4 '+H[key(W2+14*DAY)]+' …'});
+    return {steps,D22,D26,J2,W2,blockEnd,evenHolder:H[key(W2)]};
   }
   function renderIngress(view){
-    const m=MODELS.find(x=>x.chosen), sh=view.shift||0, H=build(m,sh), nm=h=>sideName(view,h);
-    const tr=transition(H,2026,sh);
+    const m=MODELS.find(x=>x.chosen), sh=view.shift||0, P=patternOf(view), H=build(m,sh,P), nm=h=>sideName(view,h);
+    const tr=transition(H,2026,sh,P);
     $('tl').innerHTML=tr.steps.map(s=>'<li class="'+s.who+'"><span class="d">'+dfmt(s.t)+'</span><span><span class="who">Barnen till '+nm(s.who)+'.</span> <span class="note">'+s.note.replace(/\bA\b/g,nm('A')).replace(/\bB\b/g,nm('B'))+'</span></span></li>').join('');
     {
       const LB={'12-18':'sista skol\u00addag','12-19':'jullov börjar','12-24':'jul\u00adafton','12-25':'jul\u00addagen','12-26':'annan\u00addag jul','12-31':'nyårs\u00adafton','01-01':'nyårs\u00addagen','01-06':'tretton\u00addagen','01-11':'skol\u00adstart'};
@@ -419,19 +435,19 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
           const d=wk+i*DAY, x=new Date(d), h=H[key(d)], prev=H[key(d-DAY)];
           const mk=String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0');
           const dn=x.getUTCDate()+(x.getUTCDate()===1||d===from?' '+MON[x.getUTCMonth()]:'');
-          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev?'<span class="by">byte'+(dow(d-sh*DAY)===1?(sh?' kl\u00a015':''):' kl\u00a012')+'</span>':'')+'</div>');
+          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev&&!(P&&regularChange(view,d,h,prev))?'<span class="by">byte'+(dow(d-sh*DAY)===1?(sh?' kl\u00a015':''):' kl\u00a012')+'</span>':'')+'</div>');
         }
       }
       $('mini').innerHTML=g.join('');
     }
     const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-    $('tlSum').textContent=cap(nm(tr.evenHolder))+' har jämna veckor 2027, '+nm(other(tr.evenHolder))+' udda. Vecka 53 (28 dec–3 jan) försvinner in i nyårsblocket, ingen 53-veckorsregel behövs.';
-    const heads=['Årsskifte','Jul, 22–26 dec','Nyår, 26 dec–2 jan','Resten av helgen och v1, 2 jan → v2','Veckorna startar',sh?'Fredag v2 hos':'Vecka 2 hos',sh?'Jämna veckors helger året efter':'Jämna veckor året efter'];
+    $('tlSum').textContent=cap(nm(tr.evenHolder))+(P?' har helgerna i jämna veckor 2027, ':' har jämna veckor 2027, ')+nm(other(tr.evenHolder))+' udda. Vecka 53 (28 dec–3 jan) försvinner in i nyårsblocket, ingen 53-veckorsregel behövs.';
+    const heads=['Årsskifte','Jul, 22–26 dec','Nyår, 26 dec–2 jan','Resten av helgen och v1, 2 jan → v2',P?'Helgerna startar':'Veckorna startar',P?'Helg v2 hos':sh?'Fredag v2 hos':'Vecka 2 hos',sh||P?'Jämna veckors helger året efter':'Jämna veckor året efter'];
     const td=(i,cls,html)=>'<td data-label="'+heads[i]+'"'+(cls?' class="'+cls+'"':'')+'><span class="v">'+html+'</span></td>';
     let rows='';
     for(let y=2026;y<=2031;y++){
-      const x=transition(H,y,sh);
-      rows+='<tr>'+td(0,'','<b>'+y+'/'+String(y+1).slice(2)+'</b>')+td(1,'',nm(H[key(x.D22)]))+td(2,'',nm(H[key(x.D26)]))+td(3,'',nm(H[key(x.J2)])+' <span class="num">(2–'+fmt(x.W2)+')</span>')+td(4,'num',dfmt(x.W2))+td(5,'',nm(H[key(x.W2)]))+td(6,'',nm(x.evenHolder))+'</tr>';
+      const x=transition(H,y,sh,P);
+      rows+='<tr>'+td(0,'','<b>'+y+'/'+String(y+1).slice(2)+'</b>')+td(1,'',nm(H[key(x.D22)]))+td(2,'',nm(H[key(x.D26)]))+td(3,'',nm(H[key(x.J2)])+' <span class="num">(2–'+fmt(x.blockEnd)+')</span>')+td(4,'num',dfmt(x.W2))+td(5,'',nm(H[key(x.W2)]))+td(6,'',nm(x.evenHolder))+'</tr>';
     }
     $('nyTable').innerHTML='<thead><tr>'+heads.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody>';
   }
@@ -441,13 +457,16 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
     const view=STATE.view, swap=!!SWAP[view.id];
     document.documentElement.dataset.swap=swap?'1':'';
     $('viewTitle').textContent=view.title;
-    $('rule1').textContent=view.rule1||'Byte på måndag. Alla fyra barnen samma vecka.';
+    const P=patternOf(view), cap1=t=>t.charAt(0).toUpperCase()+t.slice(1);
+    $('rule1h').textContent=P?'Fasta veckodagar, varannan helg.':'Varannan vecka.';
+    $('rule1').textContent=P?cap1(sideName(view,P[1]))+' har alltid barnen måndag och tisdag, '+sideName(view,P[3])+' onsdag och torsdag. Fredag till söndag växlar varannan vecka.':(view.rule1||'Byte på måndag. Alla fyra barnen samma vecka.');
+    $('rule6h').textContent=P?'Jämna och udda helger byter ägare en gång per år, vid nyår.':'Jämna och udda veckor byter ägare en gång per år, vid nyår.';
     $('julTxt').textContent='Jämna år: jul hos '+view.sideA+', nyår hos '+view.sideB+'. Udda år tvärtom.';
     $('midTxt').textContent='Jämna år hos '+view.sideA+', udda år hos '+view.sideB+'.';
     $('fdLi').hidden=!view.kids.length;
     $('fdTxt').textContent='Jämna år hos '+view.sideB+', udda år hos '+view.sideA+'. 2026: '+view.kids.map(k=>k.name).join(', ')+' hos '+view.sideB+'.';
     const lA='<span><i class="sw a"></i> '+(view.legendA||('hos '+view.sideA))+'</span>', lB='<span><i class="sw b"></i> '+(view.legendB||('hos '+view.sideB))+'</span>';
-    $('legend').innerHTML=(swap?lB+lA:lA+lB)+'<span><i class="sw mx"></i> byte mitt i veckan, dagarna syns i randen</span>';
+    $('legend').innerHTML=(swap?lB+lA:lA+lB)+'<span><i class="sw mx"></i> '+(P?'vecka som avviker från mönstret, dagarna syns i randen':'byte mitt i veckan, dagarna syns i randen')+'</span>';
     renderIngress(view); renderModels(view);
   }
 
