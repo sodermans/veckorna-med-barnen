@@ -246,7 +246,7 @@
 
   <div id="models"></div>
 
-  <footer class="wrap">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen. Skoldatum enligt Täby kommuns läsårstider 2026/27 (höstlov v44, sportlov v9, påsklov veckan efter påsk, skolstart 11 jan). Senare läsår antas följa samma mönster tills Täby publicerat dem.</footer>
+  <footer class="wrap"><span id="footNote">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen.</span> Skoldatum enligt Täby kommuns läsårstider 2026/27 (höstlov v44, sportlov v9, påsklov veckan efter påsk, skolstart 11 jan). Senare läsår antas följa samma mönster tills Täby publicerat dem.</footer>
 </div>
 
 <script>
@@ -521,6 +521,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
     $('rule1h').textContent=P?'Fasta veckodagar, varannan helg.':'Varannan vecka.';
     $('rule1').textContent=view.rule1||(P?cap1(sideName(view,P[1]))+' har alltid barnen måndag och tisdag, '+sideName(view,P[3])+' onsdag och torsdag. Fredag till söndag växlar varannan vecka.':'Byte på måndag. Alla fyra barnen samma vecka.');
     $('rule2').textContent=P?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Däremellan korta perioder i vanlig 2-2-3-rytm, aldrig mer än fem dagar i sträck, och helgerna som grundschemat där det går. Växlar varje år.':'Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år.';
+    $('footNote').textContent=P?'Räknat dag för dag ur kalendern. Jul- och nyårsdagarna väljs varje år så att ingen period blir längre än fem dagar, med helgerna som Erik & Emily så långt det går. Bytesdagen tillhör den som tar emot barnen; midsommarhelgen räknas kl 12.':'Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen.';
     $('rule6h').textContent=P?'Jämna och udda helger byter ägare en gång per år, vid nyår.':'Jämna och udda veckor byter ägare en gång per år, vid nyår.';
     $('julTxt').textContent='Jämna år: jul hos '+view.sideA+', nyår hos '+view.sideB+'. Udda år tvärtom.';
     $('midTxt').textContent='Jämna år hos '+view.sideA+', udda år hos '+view.sideB+'.';
