@@ -215,11 +215,11 @@
         <div class="eyebrow">Grundregeln</div>
         <ol>
           <li><b id="rule1h">Varannan vecka.</b> <span id="rule1">Byte på måndag. Alla fyra barnen samma vecka.</span></li>
-          <li><b>Jul och nyår delas varje år.</b> <span id="rule2">Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år.</span> <span id="julTxt"></span></li>
+          <li><b>Jul och nyår delas varje år.</b> <span id="rule2">Julveckan, veckan med julafton, hos julfamiljen. Nyårsveckan, veckan med nyårsafton, hos nyårsfamiljen. Juldagen följer med julafton och nyårsdagen med nyårsafton. Växlar varje år.</span> <span id="julTxt"></span></li>
           <li><b>Midsommar växlar varje år.</b> <span id="midTxt"></span></li>
           <li><b>Påsk och lov</b> hamnar där veckan råkar hamna.</li>
           <li id="fdLi"><b>Födelsedagar firas varannat år hos vardera hemmet</b>, bara den dagen, oberoende av veckan. <span id="fdTxt"></span></li>
-          <li><b id="rule6h">Jämna och udda veckor byter ägare en gång per år, vid nyår.</b> Hur, det står nedan.</li>
+          <li><b id="rule6h">Jämna och udda veckor byter ägare vid nyår de år julveckan kräver det.</b> <span id="rule6">Behövs en extra vecka delas den: julfamiljen måndag–torsdag, nyårsfamiljen fredag–söndag. Hur det blir står nedan.</span></li>
         </ol>
       </div>
     </div>
@@ -234,7 +234,7 @@
   <section id="ingress">
     <div class="wrap">
       <h2>Så tar vi oss igenom jul och nyår 2026/27</h2>
-      <p class="blurb">2026 har 53 veckor. Med det här upplägget behöver ingen tänka på det: vecka 53 försvinner in i jul- och nyårsdelningen. Täbys skolor: sista skoldag fredag 18 december, skolstart måndag 11 januari, samma dag som veckorna startar om.</p>
+      <p class="blurb"><span id="ingressTxt">2026 har 53 veckor.</span> Täbys skolor: sista skoldag fredag 18 december, skolstart måndag 11 januari, samma dag som veckorna startar om.</p>
       <ol class="tl" id="tl"></ol>
       <div class="mini" id="mini"></div>
       <p class="blurb" id="tlSum" style="margin-top:14px"></p>
@@ -246,7 +246,7 @@
 
   <div id="models"></div>
 
-  <footer class="wrap"><span id="footNote">Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen.</span> Skoldatum enligt Täby kommuns läsårstider 2026/27 (höstlov v44, sportlov v9, påsklov veckan efter påsk, skolstart 11 jan). Senare läsår antas följa samma mönster tills Täby publicerat dem.</footer>
+  <footer class="wrap"><span id="footNote">Räknat dag för dag ur kalendern.</span> Skoldatum enligt Täby kommuns läsårstider 2026/27 (höstlov v44, sportlov v9, påsklov veckan efter påsk, skolstart 11 jan). Senare läsår antas följa samma mönster tills Täby publicerat dem.</footer>
 </div>
 
 <script>
@@ -285,11 +285,24 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
   }
 
   const MODELS=[
-    {id:'n2', chosen:true, name:'Nyår, med dagarna', kind:'newyear',
-     blurb:'Tre fasta datum varje år: 22 december, annandag jul och 2 januari. Julfamiljen har barnen 22 december till annandag jul. Nyårsfamiljen annandag jul till 2 januari. Julfamiljen 2 januari till måndagen i vecka 2. Sedan varannan vecka igen, med nyårsfamiljen först.',
-     pros:['Samma tre datum varje år: 22 dec, 25 dec, 1 jan. Inga undantag.','Kortast perioder av alla. Inga extra flyttar under året.'],
-     cons:['Tre byten på två veckor kring jul.','Julfamiljen har barnen nyårshelgen plus vecka 1, upp till tio dagar.']},
+    {id:'n3', chosen:true, name:'Hela veckor', kind:'newyear',
+     blurb:'Julveckan, veckan med julafton, hos julfamiljen. Nyårsveckan, veckan med nyårsafton, hos nyårsfamiljen. Sedan varannan vecka igen. Vilka veckor som blir jämna och udda bestäms av var nästa julvecka hamnar; behövs en extra vecka för att få det rätt delas veckan efter nyårsveckan, julfamiljen måndag–torsdag och nyårsfamiljen fredag–söndag.',
+     pros:['Byten på måndagar som vanligt. Hela veckor kring jul och nyår.','Jämna och udda veckor byter bara när kalendern kräver det.'],
+     cons:['En extra vecka delas vissa år: fyra dagar och tre dagar.']},
   ];
+
+  // Årsskiftet i grundmodellen. Julveckan (veckan med 24 dec) hos julfamiljen, nyårsveckan (veckan därpå) hos
+  // nyårsfamiljen. Är julafton en söndag följer juldagen med, och nyårsdagen med nyårsafton, så bytet sker på
+  // tisdagen. Nästa års veckoparitet väljs så att nästa julvecka hamnar hos rätt familj; kräver det en extra
+  // vecka delas veckan efter nyårsveckan: julfamiljen mån–tors, nyårsfamiljen fre–sön.
+  function yearEnd(y){
+    const F1=julFam(y), F2=other(F1);
+    const jm=mondayOfDate(D(y,12,24)), julEnd=Math.max(jm+7*DAY,D(y,12,26));
+    const nm=jm+7*DAY, nyEnd=Math.max(nm+7*DAY,D(y+1,1,2)), M1=nm+7*DAY;
+    const k=Math.round((mondayOfDate(D(y+1,12,24))-M1)/(7*DAY)); // veckor från M1 till nästa julvecka
+    const plain=(k%2===0?F1:F2)===julFam(y+1);                    // ren växling ger rätt familj nästa julvecka?
+    return {F1,F2,jm,julEnd,nm,nyEnd,M1,split:!plain,R:plain?M1:M1+7*DAY};
+  }
 
   // Jul och nyår i mönstervyer: korta perioder i 2-2-3-anda, aldrig mer än cap dagar i sträck.
   // Fast: 24–25 dec hos julfamiljen, 31 dec–1 jan hos nyårsfamiljen. Övriga dagar i fönstret väljs så att,
@@ -350,9 +363,11 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       const M1=mondayOfDate(D(y,12,24)), D25=D(y,12,25), J1=D(y+1,1,1);
       if(m.kind==='summer'){ forced.push([M1,D25,F1],[D25,J1,F2]); }
       if(m.id==='n1'){ const E=firstMondayFrom(J1)+7*DAY; forced.push([M1,D25,F1],[D25,E,F2]); reset[key(E)]=F1; }
-      if(m.id==='n2'){
-        const D22=D(y,12,22), D26=D(y,12,26), J2=D(y+1,1,2), W2=mondayOf(y+1,2);
-        forced.push([D22,D26,F1],[D26,J2,F2],[J2,W2+shift*DAY,F1]); reset[key(W2+shift*DAY)]=F2;
+      if(m.id==='n3'){
+        const e=yearEnd(y);
+        forced.push([e.jm,e.julEnd,F1],[e.julEnd,e.nyEnd,F2]);
+        if(e.split){ forced.push([e.M1,e.M1+4*DAY,F1],[e.M1+4*DAY,e.M1+7*DAY,F2]); reset[key(e.M1+7*DAY)]=F1; }
+        else reset[key(e.M1)]=F1;
       }
       const mf=midsommar(y); forced.push([mf,mf+3*DAY,midFam(y)]);
     }
@@ -413,7 +428,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       const a=analyse(m,view);
       const sec=document.createElement('section'); sec.className='model'; sec.id='m-'+m.id;
       const rows=a.res.map(x=>'<div class="srow"><span class="lab">'+x.r.label+'</span><span class="seg">'+x.cells.map((c,i)=>'<i class="'+c+'" title="'+YEARS[i]+': '+sideName(view,c)+'"></i>').join('')+'</span><span class="cnt"><b class="A">'+x.a+'</b> – <b class="B">'+x.b+'</b></span><span class="wait'+(x.wait>=4?' bad':'')+'">väntan max '+x.wait+' år</span></div>').join('');
-      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+(patternOf(view)?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Övriga dagar i vanlig 2-2-3-rytm, högst fem dagar i sträck, med helgerna som grundschemat där det går. Sedan varannan helg igen, med nyårsfamiljen först.':view.shift?m.blurb.replace('måndagen i vecka 2','fredagen i vecka 2'):m.blurb)+'</p>'+
+      sec.innerHTML='<div class="wrap"><header><h2>Så ser ett vanligt år ut</h2></header><p class="blurb">'+(patternOf(view)?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Övriga dagar i vanlig 2-2-3-rytm, högst fem dagar i sträck, med helgerna som grundschemat där det går. Sedan varannan helg igen.':m.blurb)+'</p>'+
         '<div class="calhead"><label class="yearsel">År <select class="yearsel-input">'+YEARS.map(y=>'<option value="'+y+'"'+(y===STATE.year?' selected':'')+'>'+y+'</option>').join('')+'</select></label><span class="note calnote"></span></div><div class="cal"></div>'+
         '<div class="stats"><h3>Fördelning 2026–2037</h3>'+rows+
         '<div class="totals"><div class="tot"><b>'+a.even+' av '+a.res.length+'</b><span>tillfällen jämnt fördelade</span></div><div class="tot"><b>'+a.maxWait+' år</b><span>längsta väntan</span></div><div class="tot"><b>'+a.maxRun+' dagar</b><span>längsta period hos samma hushåll</span></div><div class="tot"><b>'+sv(a.extraPerYear)+'</b><span>extra byten per år</span></div></div></div></div>';
@@ -462,21 +477,27 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
         let e=t; while(H[key(e+DAY)]===H[key(t)]) e+=DAY;
         const n=Math.round((e-t)/DAY)+1; if(t<w2) maxRun=Math.max(maxRun,n);
         const lab=[]; if(t<=D24&&e>=D24) lab.push('julafton och juldagen'); if(t<=D31&&e>=D31) lab.push('nyårsafton och nyårsdagen');
-        const note=t===W2?'helg v2. Sedan varannan helg: v3 '+H[key(W2+7*DAY)]+', v4 '+H[key(W2+14*DAY)]+' …':(lab.length?lab.join(', ')+'. ':'')+n+' dagar, t.o.m. '+dfmt(e);
+        const note=t===W2?'helg v2. Sedan varannan helg: v3 '+H[key(W2+7*DAY)]+', v4 '+H[key(W2+14*DAY)]+' …':(lab.length?lab.join(', ')+'. ':'')+(n===1?'1 dag':n+' dagar')+', t.o.m. '+dfmt(e);
         steps.push({t,who:H[key(t)],note});
       }
-      return {steps,D22,D26,J2,W2,blockEnd:w2,evenHolder:H[key(W2)],maxRun,D24,D31};
+      return {steps,from:mondayOfDate(D22)-7*DAY,to:mondayOfDate(W2)+7*DAY,W2,evenHolder:H[key(W2)],maxRun,D24,D31};
     }
-    sh=sh||0;
-    const D22=D(y,12,22), D25=D(y,12,25), D26=D(y,12,26), J1=D(y+1,1,1), J2=D(y+1,1,2), W2=mondayOf(y+1,2)+sh*DAY, M0=mondayOfDate(D22-sh*DAY)+sh*DAY, blockEnd=W2;
-    const steps=[], hd=sh?'fredagsbyte':'måndagsbyte', wl=sh?'fre v':'v';
-    const julNote='Julafton och juldagen hos '+H[key(D25)];
-    if(H[key(D22)]===H[key(D22-DAY)] && M0<D22){ steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w+'. Barnen stannar över 22 dec. '+julNote}); }
-    else { if(M0<D22) steps.push({t:M0,who:H[key(M0)],note:'vanligt '+hd+', v'+iso(M0).w}); steps.push({t:D22,who:H[key(D22)],note:'kl 12. '+julNote}); }
-    steps.push({t:D26,who:H[key(D26)],note:'annandag jul, kl 12. Nyårsafton och nyårsdagen hos '+H[key(J1)]});
-    steps.push({t:J2,who:H[key(J2)],note:'2 januari, kl 12. Resten av nyårshelgen och v1'});
-    steps.push({t:W2,who:H[key(W2)],note:wl+'2. Sedan varannan vecka: '+wl+'3 '+H[key(W2+7*DAY)]+', '+wl+'4 '+H[key(W2+14*DAY)]+' …'});
-    return {steps,D22,D26,J2,W2,blockEnd,evenHolder:H[key(W2)]};
+    const e=yearEnd(y), steps=[], R=e.R, from=e.jm-7*DAY;
+    for(let t=from;t<=R;t+=DAY){
+      if(H[key(t)]===H[key(t-DAY)]) continue;
+      let en=t; while(H[key(en+DAY)]===H[key(t)]) en+=DAY;
+      const n=Math.round((en-t)/DAY)+1, w=iso(t).w;
+      let note;
+      if(t===R) note='v'+w+'. Sedan varannan vecka: v'+iso(R+7*DAY).w+' '+H[key(R+7*DAY)]+', v'+iso(R+14*DAY).w+' '+H[key(R+14*DAY)]+' …';
+      else if(t===e.jm) note='julveckan, v'+w+(e.julEnd>e.jm+7*DAY?' t.o.m. juldagen':'')+'. Julafton och juldagen hos '+e.F1;
+      else if(t===e.julEnd) note='nyårsveckan'+(dow(t)===1?', v'+w:' från tisdag')+(e.nyEnd>e.nm+7*DAY?' t.o.m. nyårsdagen':'')+'. Nyårsafton och nyårsdagen hos '+e.F2;
+      else if(e.split&&t>=e.M1&&t<e.M1+4*DAY) note='delad vecka, v'+w+': måndag–torsdag hos '+e.F1+', så att veckorna '+(y+1)+' hamnar rätt';
+      else if(e.split&&t===e.M1+4*DAY) note='delad vecka, v'+w+': fredag–söndag hos '+e.F2;
+      else if(t<e.jm) note='vanligt måndagsbyte, v'+w;
+      else note=(n===1?'1 dag':n+' dagar')+', t.o.m. '+dfmt(en);
+      steps.push({t,who:H[key(t)],note});
+    }
+    return {steps,from,to:R+7*DAY,R,e,evenHolder:H[key(mondayOf(y+1,2))]};
   }
   function renderIngress(view){
     const m=MODELS.find(x=>x.chosen), sh=view.shift||0, P=patternOf(view), H=build(m,sh,P), nm=h=>sideName(view,h);
@@ -484,7 +505,7 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
     $('tl').innerHTML=tr.steps.map(s=>'<li class="'+s.who+'"><span class="d">'+dfmt(s.t)+'</span><span><span class="who">Barnen till '+nm(s.who)+'.</span> <span class="note">'+s.note.replace(/\bA\b/g,nm('A')).replace(/\bB\b/g,nm('B'))+'</span></span></li>').join('');
     {
       const LB={'12-18':'sista skol\u00addag','12-19':'jullov börjar','12-24':'jul\u00adafton','12-25':'jul\u00addagen','12-26':'annan\u00addag jul','12-31':'nyårs\u00adafton','01-01':'nyårs\u00addagen','01-06':'tretton\u00addagen','01-11':'skol\u00adstart'};
-      const from=mondayOfDate(tr.D22)-7*DAY, to=mondayOfDate(tr.W2)+7*DAY;
+      const from=tr.from, to=tr.to;
       let g=['mån','tis','ons','tors','fre','lör','sön'].map(d=>'<div class="hd">'+d+'</div>');
       g.unshift('<div></div>');
       for(let wk=from; wk<to; wk+=7*DAY){
@@ -493,21 +514,22 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
           const d=wk+i*DAY, x=new Date(d), h=H[key(d)], prev=H[key(d-DAY)];
           const mk=String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0');
           const dn=x.getUTCDate()+(x.getUTCDate()===1||d===from?' '+MON[x.getUTCMonth()]:'');
-          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev&&!(P&&regularChange(view,d,h,prev))?'<span class="by">byte'+(P?'':dow(d-sh*DAY)===1?(sh?' kl\u00a015':''):' kl\u00a012')+'</span>':'')+'</div>');
+          g.push('<div class="dd '+h+'" title="'+dfmt(d)+' · '+nm(h)+'"><span class="dn">'+dn+'</span>'+(LB[mk]?'<span class="lb">'+LB[mk]+'</span>':'')+(h!==prev&&!(P&&regularChange(view,d,h,prev))?'<span class="by">byte</span>':'')+'</div>');
         }
       }
       $('mini').innerHTML=g.join('');
     }
     const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-    $('tlSum').textContent=cap(nm(tr.evenHolder))+(P?' har helgerna i jämna veckor 2027, ':' har jämna veckor 2027, ')+nm(other(tr.evenHolder))+' udda. '+(P?'Helgerna följer samma rotation som grundschemat, så vecka 53 behöver ingen egen regel.':'Vecka 53 (28 dec–3 jan) försvinner in i nyårsblocket, ingen 53-veckorsregel behövs.');
+    $('ingressTxt').textContent=P?'2026 har 53 veckor. Helgerna följer Erik & Emily, och dagarna däremellan delas i korta perioder, se nedan.':'2026 har 53 veckor. Julveckan v52 hos '+nm(tr.e.F1)+', nyårsveckan v53 hos '+nm(tr.e.F2)+', och vecka 1 delas så att veckorna 2027 blir samma som 2026.';
+    $('tlSum').textContent=cap(nm(tr.evenHolder))+(P?' har helgerna i jämna veckor 2027, ':' har jämna veckor 2027, ')+nm(other(tr.evenHolder))+' udda. '+(P?'Helgerna följer samma rotation som grundschemat, så vecka 53 behöver ingen egen regel.':'Samma som 2026, trots att 2026 har 53 veckor: den extra veckan delas i stället för att en familj får två veckor i rad.');
     const heads=P?['Årsskifte','Julafton och juldagen','Nyårsafton och nyårsdagen','Helg v2 hos','Jämna veckors helger året efter','Längsta period']
-      :['Årsskifte','Jul, 22–26 dec','Nyår, 26 dec–2 jan','Resten av helgen och v1, 2 jan → v2','Veckorna startar',sh?'Fredag v2 hos':'Vecka 2 hos',sh?'Jämna veckors helger året efter':'Jämna veckor året efter'];
+      :['Årsskifte','Julveckan','Nyårsveckan','Delad vecka','Veckorna startar','Jämna veckor året efter'];
     const td=(i,cls,html)=>'<td data-label="'+heads[i]+'"'+(cls?' class="'+cls+'"':'')+'><span class="v">'+html+'</span></td>';
     let rows='';
     for(let y=2026;y<=2031;y++){
       const x=transition(H,y,sh,P), yr='<b>'+y+'/'+String(y+1).slice(2)+'</b>';
       rows+=P?'<tr>'+td(0,'',yr)+td(1,'',nm(H[key(x.D24)]))+td(2,'',nm(H[key(x.D31)]))+td(3,'',nm(H[key(x.W2)]))+td(4,'',nm(x.evenHolder))+td(5,'num',x.maxRun+' dagar')+'</tr>'
-        :'<tr>'+td(0,'',yr)+td(1,'',nm(H[key(x.D22)]))+td(2,'',nm(H[key(x.D26)]))+td(3,'',nm(H[key(x.J2)])+' <span class="num">(2–'+fmt(x.blockEnd)+')</span>')+td(4,'num',dfmt(x.W2))+td(5,'',nm(H[key(x.W2)]))+td(6,'',nm(x.evenHolder))+'</tr>';
+        :'<tr>'+td(0,'',yr)+td(1,'',nm(x.e.F1)+' <span class="num">('+fmt(x.e.jm)+'–'+fmt(x.e.julEnd-DAY)+')</span>')+td(2,'',nm(x.e.F2)+' <span class="num">('+fmt(x.e.julEnd)+'–'+fmt(x.e.nyEnd-DAY)+')</span>')+td(3,'',x.e.split?'v'+iso(x.e.M1).w+': '+nm(x.e.F1)+' mån–tors, '+nm(x.e.F2)+' fre–sön':'ingen')+td(4,'num',dfmt(x.R))+td(5,'',nm(x.evenHolder))+'</tr>';
     }
     $('nyTable').innerHTML='<thead><tr>'+heads.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody>';
   }
@@ -520,9 +542,10 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
     const P=patternOf(view), cap1=t=>t.charAt(0).toUpperCase()+t.slice(1);
     $('rule1h').textContent=P?'Fasta veckodagar, varannan helg.':'Varannan vecka.';
     $('rule1').textContent=view.rule1||(P?cap1(sideName(view,P[1]))+' har alltid barnen måndag och tisdag, '+sideName(view,P[3])+' onsdag och torsdag. Fredag till söndag växlar varannan vecka.':'Byte på måndag. Alla fyra barnen samma vecka.');
-    $('rule2').textContent=P?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Däremellan korta perioder i vanlig 2-2-3-rytm, aldrig mer än fem dagar i sträck, och helgerna som grundschemat där det går. Växlar varje år.':'Julfamiljen 22 december till annandag jul, nyårsfamiljen annandag jul till 2 januari. Juldagen och nyårsdagen stannar alltså hos den som hade aftonen. Växlar varje år.';
-    $('footNote').textContent=P?'Räknat dag för dag ur kalendern. Jul- och nyårsdagarna väljs varje år så att ingen period blir längre än fem dagar, med helgerna som Erik & Emily så långt det går. Bytesdagen tillhör den som tar emot barnen; midsommarhelgen räknas kl 12.':'Räknat dag för dag ur kalendern. Byten 22 dec, annandag jul, 2 jan och midsommar räknas kl 12; bytesdagen tillhör den som tar emot barnen.';
-    $('rule6h').textContent=P?'Jämna och udda helger byter ägare en gång per år, vid nyår.':'Jämna och udda veckor byter ägare en gång per år, vid nyår.';
+    $('rule2').textContent=P?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Däremellan korta perioder i vanlig 2-2-3-rytm, aldrig mer än fem dagar i sträck, och helgerna som grundschemat där det går. Växlar varje år.':'Julveckan, veckan med julafton, hos julfamiljen. Nyårsveckan, veckan med nyårsafton, hos nyårsfamiljen. Juldagen följer med julafton och nyårsdagen med nyårsafton. Växlar varje år.';
+    $('rule6').textContent=P?'Helgerna följer grundschemat.':'Behövs en extra vecka delas den: julfamiljen måndag–torsdag, nyårsfamiljen fredag–söndag. Hur det blir står nedan.';
+    $('footNote').textContent=P?'Räknat dag för dag ur kalendern. Jul- och nyårsdagarna väljs varje år så att ingen period blir längre än fem dagar, med helgerna som Erik & Emily så långt det går. Bytesdagen tillhör den som tar emot barnen; midsommarhelgen räknas kl 12.':'Räknat dag för dag ur kalendern. Byten sker på måndagar; i en delad vecka byter man på fredagen, och de år julafton är en söndag följer juldagen respektive nyårsdagen med så att bytet sker på tisdagen. Midsommar räknas kl 12. Bytesdagen tillhör den som tar emot barnen.';
+    $('rule6h').textContent=P?'Jämna och udda helger byter ägare vid nyår de år julveckan kräver det.':'Jämna och udda veckor byter ägare vid nyår de år julveckan kräver det.';
     $('julTxt').textContent='Jämna år: jul hos '+view.sideA+', nyår hos '+view.sideB+'. Udda år tvärtom.';
     $('midTxt').textContent='Jämna år hos '+view.sideA+', udda år hos '+view.sideB+'.';
     $('fdLi').hidden=!view.kids.length;
