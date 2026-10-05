@@ -217,7 +217,7 @@
           <li><b id="rule1h">Varannan vecka.</b> <span id="rule1">Byte på måndag. Alla fyra barnen samma vecka.</span></li>
           <li><b>Jul och nyår delas varje år.</b> <span id="rule2">Julveckan, veckan med julafton, hos julfamiljen. Nyårsveckan, veckan med nyårsafton, hos nyårsfamiljen. Juldagen följer med julafton och nyårsdagen med nyårsafton. Växlar varje år.</span> <span id="julTxt"></span></li>
           <li><b>Midsommar växlar varje år.</b> <span id="midTxt"></span></li>
-          <li><b>Påsk och lov</b> hamnar där veckan råkar hamna.</li>
+          <li><b id="rule4h">Sportlov, påsklov och höstlov växlar varje år.</b> <span id="rule4"></span></li>
           <li id="fdLi"><b>Födelsedagar firas varannat år hos vardera hemmet</b>, bara den dagen, oberoende av veckan. <span id="fdTxt"></span></li>
           <li><b id="rule6h">Jämna och udda veckor byter ägare vid nyår de år julveckan kräver det.</b> <span id="rule6">Behövs en extra vecka delas den: julfamiljen måndag–torsdag, nyårsfamiljen fredag–söndag. Hur det blir står nedan.</span></li>
         </ol>
@@ -381,8 +381,22 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
       for(const f of forced){ if(t>=f[0]&&t<f[1]){ h=f[2]; break; } }
       H[k]=h;
     }
+    if(m.id==='n3'){
+      // Sportlov (v9), påsklov (veckan efter påsk) och höstlov (v44) växlar varje år, med 2026 som utgångspunkt.
+      // Ger veckorna lovveckan W till fel familj delas veckan före och veckan efter: lovfamiljen T har
+      // mån–tors i W-1 och fre–sön i W+1, den andra familjen resten. Totalen blir densamma, ingen period över 7 dagar.
+      LOV.forEach(f=>{
+        const base=H[key(f(2026))];
+        for(let y=2026;y<=2037;y++){
+          const W=f(y), T=(y-2026)%2===0?base:other(base), X=other(T);
+          if(H[key(W)]===T) continue;
+          for(let i=0;i<7;i++){ H[key(W+i*DAY)]=T; H[key(W-7*DAY+i*DAY)]=i<4?T:X; H[key(W+7*DAY+i*DAY)]=i<4?X:T; }
+        }
+      });
+    }
     return H;
   }
+  const LOV=[y=>mondayOf(y,9), y=>easter(y)+2*DAY, y=>mondayOf(y,44)]; // måndagen i lovveckan
   const hol=(H,t)=>H[key(t)];
 
   function occasions(view){
@@ -543,6 +557,8 @@ const USERS = {"erik":"KJX6mgxBJk1rN7C8Ap1FFY8petIK4gM6nGr6askiJmndiYHBOTBrF0tkr
     $('rule1h').textContent=P?'Fasta veckodagar, varannan helg.':'Varannan vecka.';
     $('rule1').textContent=view.rule1||(P?cap1(sideName(view,P[1]))+' har alltid barnen måndag och tisdag, '+sideName(view,P[3])+' onsdag och torsdag. Fredag till söndag växlar varannan vecka.':'Byte på måndag. Alla fyra barnen samma vecka.');
     $('rule2').textContent=P?'Julafton och juldagen hos julfamiljen, nyårsafton och nyårsdagen hos nyårsfamiljen. Däremellan korta perioder i vanlig 2-2-3-rytm, aldrig mer än fem dagar i sträck, och helgerna som grundschemat där det går. Växlar varje år.':'Julveckan, veckan med julafton, hos julfamiljen. Nyårsveckan, veckan med nyårsafton, hos nyårsfamiljen. Juldagen följer med julafton och nyårsdagen med nyårsafton. Växlar varje år.';
+    $('rule4h').textContent=P?'Lov':'Sportlov, påsklov och höstlov växlar varje år.';
+    $('rule4').textContent=P?'hamnar där dagarna råkar hamna; helgerna följer grundschemat.':'Ger veckorna lovveckan till fel familj delas veckan före och veckan efter: lovfamiljen har måndag–torsdag före lovet och fredag–söndag efter. Påskhelgen hamnar därmed hos den som inte har påsklovet. 2026: sportlov och påsklov hos '+view.sideB+', höstlov hos '+view.sideA+'. Udda år tvärtom.';
     $('rule6').textContent=P?'Helgerna följer grundschemat.':'Behövs en extra vecka delas den: julfamiljen måndag–torsdag, nyårsfamiljen fredag–söndag. Hur det blir står nedan.';
     $('footNote').textContent=P?'Räknat dag för dag ur kalendern. Jul- och nyårsdagarna väljs varje år så att ingen period blir längre än fem dagar, med helgerna som Erik & Emily så långt det går. Bytesdagen tillhör den som tar emot barnen; midsommarhelgen räknas kl 12.':'Räknat dag för dag ur kalendern. Byten sker på måndagar; i en delad vecka byter man på fredagen, och de år julafton är en söndag följer juldagen respektive nyårsdagen med så att bytet sker på tisdagen. Midsommar räknas kl 12. Bytesdagen tillhör den som tar emot barnen.';
     $('rule6h').textContent=P?'Jämna och udda helger byter ägare vid nyår de år julveckan kräver det.':'Jämna och udda veckor byter ägare vid nyår de år julveckan kräver det.';
